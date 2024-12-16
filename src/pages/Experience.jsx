@@ -1,3 +1,7 @@
 export default function Experience() {
-  return <>Experience Page</>;
+  return (
+    <>
+      <div className="flex-1"></div>
+    </>
+  );
 }

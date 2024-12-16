@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "title": "Personal Website with React + vite + Tailwind",
+    "author": "Zhenhao Yang",
+    "date": "2024-11-22",
+    "description": "My First Step to the React",
+    "content": [
+      { "type": "subtitle", "text": "1. Overview" },
+      {
+        "type": "p",
+        "text": "This website is designed to showcase my professional skills, projects, and provide a platform for sharing thoughts and insights via a blog."
+      },
+      { "type": "img", "src": "./image.png", "alt": "" },
+      { "type": "code", "text": "npm i" },
+      { "type": "code", "text": "npm run dev" },
+      { "type": "subtitle", "text": "2. Features" },
+      {
+        "type": "li",
+        "items": [
+          "Welcome Section: Brief introduction about me (profile photo, tagline, and a short bio).",
+          "Highlights: Key skills, career achievements, and an invitation to explore my projects and blog.",
+          "Purpose: Showcase my projects with detailed demonstrations of my skills in Mathematics, Statistics, and programming.",
+          "Project Gallery: Grid or list view of projects with thumbnail images.",
+          "Blog: Share personal insights, tutorials, or academic findings.",
+          "Blog List Page: Titles and excerpts for all blog posts.",
+          "Individual Blog Pages: Title, publication date, and author.",
+          "Content-rich with support for images, math formulas, and code blocks."
+        ]
+      },
+      { "type": "subtitle", "text": "3. Technical Specifications" },
+      {
+        "type": "li",
+        "items": [
+          "Framework: React + Vite.",
+          "Styling: Tailwind CSS.",
+          "Responsive Design: Mobile and desktop friendly.",
+          "Deployment: Hosting: Github-Page."
+        ]
+      }
+    ],
+    "tags": ["React", "JavaScript", "Web Development"]
+  }
+]

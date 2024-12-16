@@ -39,8 +39,8 @@ export default function NavBar() {
   const animationTransition = "transition-all duration-300 ease-in-out";
 
   return (
-    <nav className="sticky top-0 w-screen bg-slate-200 shadow-md z-50 dark:bg-gray-800 select-none">
-      <div className="max-w-7xl mx-auto flex justify-between items-center p-5 md:px-8">
+    <nav className="sticky top-0 bg-slate-200 shadow-md z-50 dark:bg-gray-800 select-none">
+      <div className="max-w-7xl mx-auto flex justify-between items-center p-5 md:px-5 md:p-1">
         <div className="text-base md:text-xl font-bold text-nowrap dark:text-white ">
           Allen&apos;s Portfolio
         </div>

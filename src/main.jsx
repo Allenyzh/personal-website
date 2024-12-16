@@ -18,8 +18,9 @@ createRoot(document.getElementById("root")).render(
           <Route path="experience" element={<Experience />} />
           <Route path="project" element={<Project />} />
           <Route path="blog" element={<Blog />} />
+          <Route path="blogpost" element={<BlogPost />} />
         </Route>
-        <Route path="/blog/blogpost" element={<BlogPost />} />
+        
       </Routes>
     </BrowserRouter>
   </StrictMode>

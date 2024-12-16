@@ -1,3 +1,7 @@
 export default function Project() {
-  return <>Project Page</>;
+  return (
+    <>
+      <div className="flex-1"></div>
+    </>
+  );
 }
