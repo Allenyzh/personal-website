@@ -14,13 +14,12 @@ createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <Routes>
         <Route path="personal-website" element={<HomePageLayout />}>
-          <Route index element={<Home />} />
-          <Route path="experience" element={<Experience />} />
-          <Route path="project" element={<Project />} />
-          <Route path="blog" element={<Blog />} />
-          <Route path="blogpost" element={<BlogPost />} />
+          <Route path="personal-website" element={<Home />} />
+          <Route path="/experience" element={<Experience />} />
+          <Route path="/project" element={<Project />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blogpost" element={<BlogPost />} />
         </Route>
-        
       </Routes>
     </BrowserRouter>
   </StrictMode>
