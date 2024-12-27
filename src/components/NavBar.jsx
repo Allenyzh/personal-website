@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router";
-import DarkIcon from "./colorTheme/DarkIcon";
-import LightIcon from "./colorTheme/LightIcon";
+import { DarkIcon, LightIcon } from "./Icon";
 
 export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -134,7 +133,6 @@ export default function NavBar() {
             </li>
           </NavLink>
           <NavLink to="project" end>
-            {" "}
             <li className={responsiveLiClass} onClick={closeMenu}>
               Project
             </li>
