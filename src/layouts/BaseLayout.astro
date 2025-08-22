@@ -1,0 +1,35 @@
+---
+import Nav from "@/components/navigation/Nav";
+import Footer from "@/components/Footer";
+import BaseHead from "@/layouts/BaseHead.astro";
+import { SITE_DESCRIPTION, SITE_TITLE } from "@/consts";
+import "@/styles/global.css";
+
+interface Props {
+  bodyClass?: string;
+  specialDescription?: string;
+}
+const { bodyClass, specialDescription } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <BaseHead
+      title={SITE_TITLE}
+      description={specialDescription ? specialDescription : SITE_DESCRIPTION}
+      keywords="portfolio, zhenhao yang, 杨镇颢, allen yang, web developer, software engineer, full-stack developer, astro, javascript, typescript, react, nodejs, web development, programming, montreal, canada, quebec, personal website, personal portfolio, blog, projects, about me, contact"
+    />
+
+    <slot name="customCss" />
+  </head>
+
+  <body class={`min-h-screen flex flex-col ${bodyClass}`}>
+    <Nav currentPath={Astro.url.pathname} />
+
+    <main class="flex-1">
+      <slot />
+    </main>
+
+    <Footer />
+  </body>
+</html>

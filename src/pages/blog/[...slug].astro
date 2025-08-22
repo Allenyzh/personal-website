@@ -1,20 +1,40 @@
 ---
-import { type CollectionEntry, getCollection, render } from 'astro:content';
-import BlogPost from '../../layouts/BlogPost.astro';
+import { type CollectionEntry, getCollection, render } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import FormattedDate from "@/components/FormattedDate.astro";
 
 export async function getStaticPaths() {
-	const posts = await getCollection('blog');
-	return posts.map((post) => ({
-		params: { slug: post.id },
-		props: post,
-	}));
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({
+    params: { slug: post.data.slug || post.id },
+    props: post,
+  }));
 }
-type Props = CollectionEntry<'blog'>;
+type Props = CollectionEntry<"blog">;
 
 const post = Astro.props;
 const { Content } = await render(post);
 ---
 
-<BlogPost {...post.data}>
-	<Content />
-</BlogPost>
+<BaseLayout specialDescription={post.data.description}>
+  <div class="mx-auto container space-y-3">
+    <h1 class="text-center text-4xl font-bold mt-6">{post.data.title}</h1>
+    <div class="flex justify-center items-center gap-3">
+      <span class="text-sm text-muted-foreground">
+        <FormattedDate date={post.data.pubDate} />
+      </span>
+      <span class="text-sm text-muted-foreground capitalize border-l pl-3"
+        >By {post.data.author}</span
+      >
+    </div>
+    <p class="text-center text-muted-foreground mb-6 border-b pb-6">
+      {post.data.description}
+    </p>
+
+    <div
+      class="prose prose-headings:text-article-primary prose-p:text-base/8 prose-p:tracking-wide prose-figcaption:text-xs prose-img:min-w-2xs prose-img:max-w-[21.5rem] prose-img:xs:min-w-xs prose-img:xs:max-w-sm prose-img:sm:min-w-sm prose-img:sm:max-w-lg prose-img:md:min-w-lg prose-img:md:max-w-3xl prose-img:shadow-lg prose-img:rounded prose-h4:mb-12 max-w-none prose-code:before:content-[''] prose-code:after:content-[''] prose-code:bg-gray-200 prose-code:px-2 prose-code:py-1 prose-code:rounded-md prose-code:text-sm prose-code:font-mono prose-code:text-gray-800"
+    >
+      <Content />
+    </div>
+  </div>
+</BaseLayout>

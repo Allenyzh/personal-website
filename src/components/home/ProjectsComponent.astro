@@ -1,0 +1,27 @@
+---
+import { getCollection } from "astro:content";
+import Projects from "@/components/home/Projects";
+
+const projects = await getCollection("projects");
+
+const sortedProjects = projects
+  .filter((project) => project.data.showOnHomePage)
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<section id="projects" class="container px-4 py-24 md:py-32">
+  <div class="mx-auto max-w-6xl">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+        Featured Projects
+      </h2>
+      <p class="mt-4 text-muted-foreground md:text-xl">
+        Some of my recent work that I'm proud of
+      </p>
+    </div>
+
+    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+      <Projects client:load projects={sortedProjects} />
+    </div>
+  </div>
+</section>

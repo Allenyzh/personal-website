@@ -1,0 +1,207 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import FormattedDate from "../../components/FormattedDate.astro";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+
+const projects = (await getCollection("projects")).sort(
+  (a, b) =>
+    b.data.order - a.data.order ||
+    b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+// Find featured project (first project with showOnHomePage)
+const featuredProject = projects.find((project) => project.data.showOnHomePage);
+---
+
+<BaseLayout bodyClass="bg-background">
+  <div class="container mx-auto px-4 py-8 max-w-6xl">
+    <!-- Header Section -->
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold tracking-tight text-foreground mb-4">
+        Projects
+      </h1>
+      <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+        A showcase of my work, including web applications, open-source projects,
+        and technical experiments.
+      </p>
+    </div>
+
+    <!-- Featured Project -->
+    {
+      featuredProject && (
+        <div class="mb-12">
+          <h2 class="text-2xl font-semibold mb-6 text-foreground">
+            Featured Project
+          </h2>
+          <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <a
+              href={`/projects/${
+                featuredProject.data.slug ||
+                featuredProject.data.title
+                  .toLowerCase()
+                  .replace(/[^a-z0-9]+/g, "-")
+                  .replace(/^-+|-+$/g, "")
+              }/`}
+              class="block"
+            >
+              <CardHeader className="pb-4">
+                <div class="flex items-center justify-between mb-2">
+                  <Badge variant="secondary">Featured</Badge>
+                  <span class="text-sm text-muted-foreground">
+                    <FormattedDate date={featuredProject.data.pubDate} />
+                  </span>
+                </div>
+                <CardTitle className="text-2xl mb-2 hover:text-primary transition-colors">
+                  {featuredProject.data.title}
+                </CardTitle>
+                {featuredProject.data.description && (
+                  <CardDescription className="text-base">
+                    {featuredProject.data.description}
+                  </CardDescription>
+                )}
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div class="flex flex-wrap gap-1 mb-4">
+                  {featuredProject.data.tech.map((tech) => {
+                    return (
+                      <Badge variant="secondary" className="text-xs">
+                        {tech}
+                      </Badge>
+                    );
+                  })}
+                </div>
+                <div class="flex gap-2">
+                  {!featuredProject.data.githubDisable &&
+                    featuredProject.data.github && (
+                      <a
+                        href={featuredProject.data.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-sm text-primary hover:underline"
+                        onclick="event.stopPropagation()"
+                      >
+                        GitHub
+                      </a>
+                    )}
+                  {!featuredProject.data.liveDisable &&
+                    featuredProject.data.live && (
+                      <a
+                        href={featuredProject.data.live}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-sm text-primary hover:underline"
+                        onclick="event.stopPropagation()"
+                      >
+                        Live Demo
+                      </a>
+                    )}
+                </div>
+              </CardContent>
+            </a>
+          </Card>
+        </div>
+      )
+    }
+
+    <!-- All Projects Grid -->
+    <div class="mb-8">
+      <h2 class="text-2xl font-semibold mb-6 text-foreground">All Projects</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {
+          projects.map((project) => (
+            <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
+              <a
+                href={`/projects/${
+                  project.data.slug ||
+                  project.data.title
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, "-")
+                    .replace(/^-+|-+$/g, "")
+                }/`}
+                class="block h-full"
+              >
+                <CardHeader className="pb-2">
+                  <div class="flex items-center justify-between mb-3">
+                    <Badge variant="outline" className="text-xs">
+                      Project
+                    </Badge>
+                    <span class="text-xs text-muted-foreground">
+                      <FormattedDate date={project.data.pubDate} />
+                    </span>
+                  </div>
+                  <CardTitle className="text-lg leading-tight mb-2 hover:text-primary transition-colors line-clamp-2">
+                    {project.data.title}
+                  </CardTitle>
+                  {project.data.description && (
+                    <CardDescription className="text-sm line-clamp-3">
+                      {project.data.description}
+                    </CardDescription>
+                  )}
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div class="flex flex-wrap gap-1 mb-3">
+                    {project.data.tech.map((tech) => {
+                      return (
+                        <Badge variant="secondary" className="text-xs">
+                          {tech}
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                  <div class="flex gap-2 text-xs">
+                    {!project.data.githubDisable && project.data.github && (
+                      <a
+                        href={project.data.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-primary hover:underline"
+                        onclick="event.stopPropagation()"
+                      >
+                        GitHub
+                      </a>
+                    )}
+                    {!project.data.liveDisable && project.data.live && (
+                      <a
+                        href={project.data.live}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-primary hover:underline"
+                        onclick="event.stopPropagation()"
+                      >
+                        Live Demo
+                      </a>
+                    )}
+                  </div>
+                </CardContent>
+              </a>
+            </Card>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    {
+      projects.length === 0 && (
+        <div class="text-center py-12">
+          <div class="mx-auto max-w-md">
+            <h3 class="text-lg font-semibold text-foreground mb-2">
+              No projects yet
+            </h3>
+            <p class="text-muted-foreground">
+              Check back later for new projects and developments.
+            </p>
+          </div>
+        </div>
+      )
+    }
+  </div>
+</BaseLayout>

@@ -1,0 +1,108 @@
+---
+import { type CollectionEntry, getCollection, render } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import FormattedDate from "@/components/FormattedDate.astro";
+import { Badge } from "@/components/ui/badge";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects");
+  return projects.map((project) => {
+    const slug =
+      project.data.slug ||
+      project.data.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+
+    return {
+      params: {
+        slug: slug,
+      },
+      props: project,
+    };
+  });
+}
+
+type Props = CollectionEntry<"projects">;
+
+const project = Astro.props;
+const { Content } = await render(project);
+---
+
+<style is:inline>
+  .prose blockquote > * {
+    font-size: 0.85rem; /* text-xs */
+    line-height: normal;
+    color: #a0a0a0; /* text-gray-600 */
+    font-style: italic;
+    font-weight: 600;
+  }
+</style>
+
+<BaseLayout specialDescription={project.data.description}>
+  <div class="mx-auto container space-y-3">
+    <h1 class="text-center text-4xl font-bold mt-6">{project.data.title}</h1>
+
+    <div class="flex justify-center items-center gap-3">
+      <span class="text-sm text-muted-foreground">
+        <FormattedDate date={project.data.pubDate} />
+      </span>
+      <span class="text-sm text-muted-foreground capitalize border-l pl-3">
+        By {project.data.author}
+      </span>
+    </div>
+
+    <p class="text-center text-muted-foreground mb-6">
+      {project.data.description}
+    </p>
+
+    <!-- Tech Stack -->
+    {
+      project.data.tech.length > 0 && (
+        <div class="flex justify-center mb-6">
+          <div class="flex flex-wrap gap-2 justify-center">
+            {project.data.tech.map((tech) => (
+              <Badge variant="secondary" className="text-sm">
+                {tech}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      )
+    }
+
+    <!-- Project Links -->
+    <div class="flex justify-center gap-4 mb-6 pb-6 border-b">
+      {
+        !project.data.githubDisable && project.data.github && (
+          <a
+            href={project.data.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors text-sm font-medium"
+          >
+            View on GitHub
+          </a>
+        )
+      }
+      {
+        !project.data.liveDisable && project.data.live && (
+          <a
+            href={project.data.live}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors text-sm font-medium"
+          >
+            Live Demo
+          </a>
+        )
+      }
+    </div>
+
+    <div
+      class="prose prose-headings:text-article-primary prose-p:text-base/8 prose-p:tracking-wide prose-figcaption:text-xs prose-img:min-w-2xs prose-img:max-w-[21.5rem] prose-img:xs:min-w-xs prose-img:xs:max-w-sm prose-img:sm:min-w-sm prose-img:sm:max-w-lg prose-img:md:min-w-lg prose-img:md:max-w-3xl prose-img:shadow-lg prose-img:rounded prose-h4:mb-12 max-w-none prose-code:before:content-[''] prose-code:after:content-[''] prose-code:bg-gray-200 prose-code:px-2 prose-code:py-1 prose-code:rounded-md prose-code:text-sm prose-code:font-mono prose-code:text-gray-800"
+    >
+      <Content />
+    </div>
+  </div>
+</BaseLayout>
