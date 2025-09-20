@@ -28,6 +28,7 @@
 /* Set Atkinson as default font */
 html {
   font-family: "Atkinson", sans-serif;
+  scroll-behavior: smooth;
 }
 
 @theme inline {

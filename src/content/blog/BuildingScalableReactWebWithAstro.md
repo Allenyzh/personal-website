@@ -1,17 +1,17 @@
 ---
 title: Building Scalable React Web Application with Astro
 description: This site is my digital resume, project showcase, and occasionally a blog where I write about what I'm learning, building, or thinking as a developer.
-pubDate: "2025-8-10"
+pubDate: "2025-9-19"
 reviseDate: null
 author: zhenhao yang
-isFeatured: false
+isFeatured: true
 showOnHomePage: true
-order: 2
+order: 1
 tech: ["astro", "react", "tailwindcss", "file CMS"]
 github: ""
-githubDisable: true
+githubDisable: false
 live: ""
-liveDisable: true
+liveDisable: false
 slug: personal-website
 ---
 

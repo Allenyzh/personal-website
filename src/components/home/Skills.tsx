@@ -34,7 +34,7 @@ export default function Skills({ className }: { className?: string }) {
   return (
     <section
       id="skills"
-      className={`container px-4 py-24 md:py-32 bg-muted/50 ${className}`}
+      className={`container px-4 py-12 md:py-24 bg-muted/50 ${className}`}
     >
       <div className="mx-auto max-w-6xl">
         <div className="text-center mb-12">

@@ -44,68 +44,54 @@ export default function RecentBlogs({ className }: { className?: string }) {
         </div>
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {sortedPosts.map((post) => (
-            <Card
-              key={post.id}
-              className="group overflow-hidden hover:shadow-lg transition-all duration-300"
-            >
-              {/* <div className="aspect-video overflow-hidden">
-                <img
-                  src={post.image || "/placeholder.svg"}
-                  alt={post.title}
-                  width={400}
-                  height={200}
-                  className="object-cover w-full h-full transition-transform group-hover:scale-105"
-                />
-              </div> */}
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between mb-2 h-6">
-                  <Badge
-                    className={`text-xs bg-emerald-100 text-emerald-700 hover:bg-emerald-200`}
-                  >
-                    Blog
-                  </Badge>
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground h-3">
-                    <div className="flex items-center gap-1 h-3">
-                      <Calendar className="h-3 w-3" />
-                      <span>{formatDate(post.data.pubDate.toString())}</span>
-                    </div>
-                    <div className="flex items-center gap-1 h-3">
-                      <Clock className="h-3 w-3" />
-                      <span>5 min read</span>
+          {sortedPosts.map((post, index) => (
+            <a href={`/blog/${post.data.slug || post.id}`} key={index}>
+              <Card
+                key={post.id}
+                className="group overflow-hidden hover:shadow-lg transition-all duration-300"
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between mb-2 h-6">
+                    <Badge
+                      className={`text-xs bg-emerald-100 text-emerald-700 hover:bg-emerald-200`}
+                    >
+                      Blog
+                    </Badge>
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground h-3">
+                      <div className="flex items-center gap-1 h-3">
+                        <Calendar className="h-3 w-3" />
+                        <span>{formatDate(post.data.pubDate.toString())}</span>
+                      </div>
+                      <div className="flex items-center gap-1 h-3">
+                        <Clock className="h-3 w-3" />
+                        <span>5 min read</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors">
-                  <a href={`/blog/${post.data.slug || post.id}`}>
+                  <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors">
                     {post.data.title}
-                  </a>
-                </CardTitle>
-                <CardDescription className="line-clamp-3">
-                  {post.data.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {post.data.tech.map((tag: string) => (
-                    <Badge key={tag} variant="outline" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="p-0 h-auto font-medium group/btn"
-                  asChild
-                >
-                  <a href={`/blog/${post.data.slug || post.id}`}>
-                    Read More
-                    <ArrowRight className="h-3 w-3 ml-1 transition-transform group-hover/btn:translate-x-1" />
-                  </a>
-                </Button>
-              </CardContent>
-            </Card>
+                  </CardTitle>
+                  <CardDescription className="line-clamp-3">
+                    {post.data.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2 ">
+                    {post.data.tech.map((tag: string) => (
+                      <Badge key={tag} variant="outline" className="text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-0 h-auto font-medium group/btn"
+                    asChild
+                  ></Button>
+                </CardContent>
+              </Card>
+            </a>
           ))}
         </div>
 
