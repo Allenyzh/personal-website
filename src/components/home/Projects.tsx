@@ -22,8 +22,9 @@ export default function Projects({
         <a
           key={project.data.slug || project.data.title || index}
           href={`/projects/${project.data.slug}`}
+          className="flex"
         >
-          <Card className="py-0 pb-4 overflow-hidden hover:shadow-lg hover:scale-102 transition-all shadow-sm">
+          <Card className="flex-1 py-0 pb-4 overflow-hidden hover:shadow-lg hover:scale-102 transition-all shadow-sm">
             <CardHeader className="flex-1 flex flex-col pt-8">
               <CardTitle>{project.data.title}</CardTitle>
               <CardDescription>{project.data.description}</CardDescription>

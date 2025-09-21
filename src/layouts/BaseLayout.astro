@@ -26,7 +26,7 @@ const { bodyClass, specialDescription } = Astro.props;
   <body class={`min-h-screen flex flex-col ${bodyClass}`}>
     <Nav currentPath={Astro.url.pathname} />
 
-    <main class="flex-1">
+    <main class="flex-1 flex flex-col">
       <slot />
     </main>
 
