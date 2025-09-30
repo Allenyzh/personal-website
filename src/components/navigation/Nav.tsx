@@ -1,5 +1,6 @@
 import { Code } from "lucide-react";
 import { SITE_TITLE } from "@/consts";
+import { navItems } from "@/data/navItems";
 
 interface NavProps {
   currentPath: string;
@@ -21,6 +22,8 @@ export default function Nav({ currentPath }: NavProps) {
     return false;
   };
 
+  const sortedNavItems = [...navItems].sort((a, b) => a.order - b.order);
+
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 mx-auto items-center">
@@ -32,36 +35,19 @@ export default function Nav({ currentPath }: NavProps) {
         </div>
         <div className="flex flex-1 items-center justify-between md:justify-end">
           <nav className="flex items-center space-x-3 text-sm font-medium">
-            <a
-              href="/"
-              className={`transition-colors text-center px-4 py-1 rounded ${
-                isActive("/")
-                  ? "bg-secondary text-primary font-semibold"
-                  : "hover:bg-gray-200"
-              }`}
-            >
-              About
-            </a>
-            <a
-              href="/blog"
-              className={`transition-colors text-center px-4 py-1 rounded ${
-                isActive("/blog")
-                  ? "bg-secondary text-primary font-semibold"
-                  : "hover:bg-gray-200"
-              }`}
-            >
-              Blogs
-            </a>
-            <a
-              href="/projects"
-              className={`transition-colors text-center px-4 py-1 rounded ${
-                isActive("/projects")
-                  ? "bg-secondary text-primary font-semibold"
-                  : "hover:bg-gray-200"
-              }`}
-            >
-              Projects
-            </a>
+            {sortedNavItems.map((item) => (
+              <a
+                key={item.path}
+                href={item.path}
+                className={`transition-colors text-center px-4 py-1 rounded ${
+                  isActive(item.path)
+                    ? "bg-secondary text-primary font-semibold"
+                    : "hover:bg-gray-200"
+                }`}
+              >
+                {item.name}
+              </a>
+            ))}
           </nav>
         </div>
       </div>
