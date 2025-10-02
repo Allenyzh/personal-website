@@ -7,7 +7,7 @@ import { MY_EMAIL, MY_GITHUB, MY_LINKEDIN } from "@/consts";
 export default function Hero() {
   return (
     <section className="container px-4 py-16 md:py-24 min-h-screen flex items-center">
-      <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
+      <div className="mx-auto grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
         <div className="flex flex-col justify-center space-y-4">
           <div className="space-y-2">
             <h2 className="text-lg font-bold  sm:text-2xl xl:text-3xl text-gray-500">

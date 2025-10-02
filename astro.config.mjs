@@ -12,7 +12,7 @@ import cloudflare from "@astrojs/cloudflare";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://example.com",
+  site: "https://allenyzh.com",
   integrations: [mdx(), sitemap(), react()],
 
   vite: {
@@ -25,4 +25,8 @@ export default defineConfig({
   },
 
   adapter: cloudflare(),
+  server: {
+    host: "0.0.0.0",
+    // allowedHosts: ['local.watsonbio.com'],
+  },
 });
