@@ -8,10 +8,13 @@ import path from "path";
 
 import react from "@astrojs/react";
 
+import cloudflare from "@astrojs/cloudflare";
+
 // https://astro.build/config
 export default defineConfig({
   site: "https://example.com",
   integrations: [mdx(), sitemap(), react()],
+
   vite: {
     plugins: [tailwindcss()],
     resolve: {
@@ -20,4 +23,6 @@ export default defineConfig({
       },
     },
   },
+
+  adapter: cloudflare(),
 });

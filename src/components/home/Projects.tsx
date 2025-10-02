@@ -42,12 +42,7 @@ export default function Projects({
                 ))}
               </div>
               <div className="flex gap-2 justify-end">
-                {project.data.githubDisable ? (
-                  <Button size="sm" variant="outline" disabled>
-                    <Github className="h-4 w-4 mr-2" />
-                    Code
-                  </Button>
-                ) : (
+                {project.data.githubDisable ? null : (
                   <Button size="sm" variant="outline" asChild>
                     <a href={project.data.github} className="">
                       <Github className="h-4 w-4 mr-2 " />
@@ -55,12 +50,7 @@ export default function Projects({
                     </a>
                   </Button>
                 )}
-                {project.data.liveDisable ? (
-                  <Button size="sm" disabled>
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    Live Demo
-                  </Button>
-                ) : (
+                {project.data.liveDisable ? null : (
                   <Button size="sm" asChild>
                     <a
                       href={project.data.live}

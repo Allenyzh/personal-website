@@ -1,4 +1,5 @@
 ---
+export const prerender = true;
 import { getCollection } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import FormattedDate from "../../components/FormattedDate.astro";
@@ -78,32 +79,6 @@ const featuredProject = projects.find((project) => project.data.showOnHomePage);
                     );
                   })}
                 </div>
-                <div class="flex gap-2">
-                  {!featuredProject.data.githubDisable &&
-                    featuredProject.data.github && (
-                      <a
-                        href={featuredProject.data.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="text-sm text-primary hover:underline"
-                        onclick="event.stopPropagation()"
-                      >
-                        GitHub
-                      </a>
-                    )}
-                  {!featuredProject.data.liveDisable &&
-                    featuredProject.data.live && (
-                      <a
-                        href={featuredProject.data.live}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="text-sm text-primary hover:underline"
-                        onclick="event.stopPropagation()"
-                      >
-                        Live Demo
-                      </a>
-                    )}
-                </div>
               </CardContent>
             </a>
           </Card>
@@ -155,30 +130,6 @@ const featuredProject = projects.find((project) => project.data.showOnHomePage);
                         </Badge>
                       );
                     })}
-                  </div>
-                  <div class="flex gap-2 text-xs">
-                    {!project.data.githubDisable && project.data.github && (
-                      <a
-                        href={project.data.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="text-primary hover:underline"
-                        onclick="event.stopPropagation()"
-                      >
-                        GitHub
-                      </a>
-                    )}
-                    {!project.data.liveDisable && project.data.live && (
-                      <a
-                        href={project.data.live}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="text-primary hover:underline"
-                        onclick="event.stopPropagation()"
-                      >
-                        Live Demo
-                      </a>
-                    )}
                   </div>
                 </CardContent>
               </a>

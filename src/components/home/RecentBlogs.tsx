@@ -15,6 +15,8 @@ const filteredPosts = posts.filter((post) => post.data.showOnHomePage);
 const sortedPosts = filteredPosts.sort(
   (a, b) => (b.data.order ?? 0) - (a.data.order ?? 0)
 );
+const hasPosts = sortedPosts.length > 0;
+
 export default function RecentBlogs({ className }: { className?: string }) {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -25,7 +27,12 @@ export default function RecentBlogs({ className }: { className?: string }) {
   };
 
   return (
-    <section id="blog" className={`container px-4 py-24 md:py-32 ${className}`}>
+    <section
+      id="blog"
+      className={`container px-4 py-24 md:py-32 ${className} ${
+        !hasPosts ? "hidden" : ""
+      }`}
+    >
       <div className="mx-auto max-w-6xl">
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-emerald-500/10 to-purple-500/10 border border-emerald-200 mb-4">
