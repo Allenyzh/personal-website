@@ -20,7 +20,11 @@ const posts = (await getCollection("blog")).sort(
 const featuredPost = posts.find((post) => post.data.isFeatured);
 ---
 
-<BaseLayout bodyClass="bg-background">
+<BaseLayout
+  bodyClass="bg-background"
+  title="My Blogs"
+  specialDescription="Thoughts, tutorials, and insights about web development, technology, and more."
+>
   <div class="container mx-auto px-4 py-8 max-w-6xl">
     <!-- Header Section -->
     <div class="text-center mb-12">

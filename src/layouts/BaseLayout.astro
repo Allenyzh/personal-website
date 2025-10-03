@@ -2,23 +2,24 @@
 import Nav from "@/components/navigation/Nav";
 import Footer from "@/components/Footer";
 import BaseHead from "@/layouts/BaseHead.astro";
-import { SITE_DESCRIPTION, SITE_TITLE } from "@/consts";
+import { SITE_DESCRIPTION, SITE_TITLE } from "@/data/consts";
 import "@/styles/global.css";
 import { GoogleAnalytics } from "@/components/common/GoogleAnalytic";
 
 interface Props {
   bodyClass?: string;
+  title?: string;
   specialDescription?: string;
 }
 
 const GA_ID = "G-P8G1Q6J8D8";
-const { bodyClass, specialDescription } = Astro.props;
+const { bodyClass, title, specialDescription } = Astro.props;
 ---
 
 <html lang="en">
   <head>
     <BaseHead
-      title={SITE_TITLE}
+      title={title ? `${title} | ${SITE_TITLE}` : SITE_TITLE}
       description={specialDescription ? specialDescription : SITE_DESCRIPTION}
       keywords="portfolio, zhenhao yang, 杨镇颢, allen yang, web developer, software engineer, full-stack developer, astro, javascript, typescript, react, nodejs, web development, programming, montreal, canada, quebec, personal website, personal portfolio, blog, projects, about me, contact"
     />

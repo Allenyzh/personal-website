@@ -1,4 +1,4 @@
-import { MY_DESCRIPTION } from "@/consts";
+import { MY_DESCRIPTION } from "@/data/consts";
 
 export default function About() {
   return (

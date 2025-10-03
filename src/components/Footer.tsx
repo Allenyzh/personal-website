@@ -1,6 +1,6 @@
 import { Github, LinkedIn } from "@/components/common/Github";
 import { Mail } from "lucide-react";
-import { MY_NAME, MY_EMAIL, MY_GITHUB, MY_LINKEDIN } from "@/consts";
+import { MY_NAME, MY_EMAIL, MY_GITHUB, MY_LINKEDIN } from "@/data/consts";
 
 export default function Footer() {
   const today = new Date();

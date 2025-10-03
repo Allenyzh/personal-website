@@ -41,7 +41,7 @@ const { Content } = await render(project);
 </style>
 
 <BaseLayout specialDescription={project.data.description}>
-  <div class="mx-auto container space-y-3">
+  <div class="md:mx-auto max-w-7xl space-y-3 px-5">
     <h1 class="text-center text-4xl font-bold mt-6">{project.data.title}</h1>
 
     <div class="flex justify-center items-center gap-3">
@@ -76,7 +76,7 @@ const { Content } = await render(project);
     <div class="flex justify-center gap-4 mb-6 pb-6 border-b"></div>
 
     <div
-      class="prose prose-headings:text-article-primary prose-p:text-base/8 prose-p:tracking-wide prose-figcaption:text-xs prose-img:min-w-2xs prose-img:max-w-[21.5rem] prose-img:xs:min-w-xs prose-img:xs:max-w-sm prose-img:sm:min-w-sm prose-img:sm:max-w-lg prose-img:md:min-w-lg prose-img:md:max-w-3xl prose-h4:mb-12 max-w-none prose-code:before:content-[''] prose-code:after:content-[''] prose-code:bg-gray-200 prose-code:px-2 prose-code:py-1 prose-code:rounded-md prose-code:text-sm prose-code:font-mono prose-code:text-gray-800"
+      class="prose prose-headings:text-article-primary prose-p:text-base/8 prose-p:tracking-wide prose-figcaption:text-xs prose-img:min-w-2xs prose-img:max-w-[21rem] prose-img:xs:min-w-xs prose-img:xs:max-w-sm prose-img:sm:min-w-sm prose-img:sm:max-w-lg prose-img:md:min-w-lg prose-img:md:max-w-3xl prose-h4:mb-12 max-w-none prose-code:before:content-[''] prose-code:after:content-[''] prose-code:bg-gray-200 prose-code:px-2 prose-code:py-1 prose-code:rounded-md prose-code:text-sm prose-code:font-mono prose-code:text-gray-800"
     >
       <Content />
     </div>

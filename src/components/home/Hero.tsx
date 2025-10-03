@@ -2,7 +2,7 @@ import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Github, LinkedIn } from "@/components/common/Github";
 import hero from "@/assets/home/heroopt.jpeg";
-import { MY_EMAIL, MY_GITHUB, MY_LINKEDIN } from "@/consts";
+import { MY_EMAIL, MY_GITHUB, MY_LINKEDIN } from "@/data/consts";
 
 export default function Hero() {
   return (
@@ -22,11 +22,16 @@ export default function Hero() {
               exceptional user experiences.
             </p>
           </div>
-          <div className="flex flex-col gap-2 min-[400px]:flex-row">
-            <Button size="lg" asChild>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Button size="lg" className="w-full sm:w-auto" asChild>
               <a href="#projects">View My Work</a>
             </Button>
-            <Button variant="outline" size="lg" asChild>
+            <Button
+              variant="outline"
+              className="w-full sm:w-auto"
+              size="lg"
+              asChild
+            >
               <a href="#contact">Get In Touch</a>
             </Button>
           </div>

@@ -1,5 +1,5 @@
 import { Code, Menu as MenuIcon, X as CloseIcon } from "lucide-react";
-import { SITE_TITLE } from "@/consts";
+import { SITE_TITLE } from "@/data/consts";
 import { navItems } from "@/data/navItems";
 import { useEffect, useState } from "react";
 
@@ -82,7 +82,7 @@ export default function Nav({ currentPath }: NavProps) {
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
             onClick={() => setMenuOpen((v) => !v)}
-            className="inline-flex items-center justify-center  px-3 py-2 text-sm font-medium transition-colors hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-ring"
+            className="inline-flex items-center justify-center rounded-full border px-2 py-2 text-sm font-medium transition-colors hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-ring"
           >
             {menuOpen ? (
               <CloseIcon className="h-5 w-5" />

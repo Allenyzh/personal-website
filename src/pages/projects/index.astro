@@ -22,7 +22,11 @@ const projects = (await getCollection("projects")).sort(
 const featuredProject = projects.find((project) => project.data.showOnHomePage);
 ---
 
-<BaseLayout bodyClass="bg-background">
+<BaseLayout
+  bodyClass="bg-background"
+  title="My Projects"
+  specialDescription="A showcase of my work, including web applications, open-source projects, and technical experiments."
+>
   <div class="container mx-auto px-4 py-8 max-w-6xl">
     <!-- Header Section -->
     <div class="text-center mb-12">
