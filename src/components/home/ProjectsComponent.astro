@@ -1,6 +1,8 @@
 ---
 import { getCollection } from "astro:content";
 import Projects from "@/components/home/Projects";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 const projects = await getCollection("projects");
 
@@ -22,6 +24,16 @@ const sortedProjects = projects
 
     <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
       <Projects client:load projects={sortedProjects} />
+    </div>
+    <div class="flex justify-center align-center mt-8">
+      <Button variant="outline" className="group">
+        <a href="/projects" class="flex justify-center items-center gap-2">
+          View All Projects
+          <ArrowRight
+            className="group-hover:translate-x-1 transition-all duration-200"
+          />
+        </a>
+      </Button>
     </div>
   </div>
 </section>

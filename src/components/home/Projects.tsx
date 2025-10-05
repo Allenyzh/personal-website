@@ -21,9 +21,23 @@ export default function Projects({
       {projects.map((project, index) => (
         <Card
           key={project.data.slug || project.data.title || index}
-          className="flex-1 py-0 pb-4 overflow-hidden hover:shadow-lg hover:scale-102 transition-all shadow-sm"
+          className="flex-1 py-0 pb-4 overflow-hidden transition-all shadow-sm"
         >
           <CardHeader className="flex-1 flex flex-col pt-8">
+            <div className="w-full flex items-center justify-between mb-3">
+              <Badge variant="outline" className="text-xs">
+                Project
+              </Badge>
+              <span className="text-xs text-muted-foreground">
+                <time dateTime={project.data.pubDate.toISOString()}>
+                  {project.data.pubDate.toLocaleDateString("en-us", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </time>
+              </span>
+            </div>
             <CardTitle>{project.data.title}</CardTitle>
             <CardDescription>{project.data.description}</CardDescription>
           </CardHeader>
@@ -41,14 +55,19 @@ export default function Projects({
             </div>
             <div className="flex gap-2 justify-end">
               <Button size="sm" variant="default" asChild>
-                <a href={`/projects/${project.data.slug}`} className="flex">
-                  {" "}
+                <a
+                  href={`/projects/${project.data.slug}`}
+                  className="hover:scale-110 transition-all duration-200 flex"
+                >
                   Read More
                 </a>
               </Button>
               {project.data.githubDisable ? null : (
                 <Button size="sm" variant="outline" asChild>
-                  <a href={project.data.github} className="">
+                  <a
+                    href={project.data.github}
+                    className="hover:scale-110 transition-all duration-200 flex"
+                  >
                     <Github className="h-4 w-4 mr-2 " />
                     Code
                   </a>
@@ -59,6 +78,7 @@ export default function Projects({
                   <a
                     href={project.data.live}
                     target="_blank"
+                    className="hover:scale-110 transition-all duration-200 flex"
                     rel="noopener noreferrer"
                   >
                     <ExternalLink className="h-4 w-4 mr-2" />

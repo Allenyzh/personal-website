@@ -5,6 +5,7 @@ import BaseHead from "@/layouts/BaseHead.astro";
 import { SITE_DESCRIPTION, SITE_TITLE } from "@/data/consts";
 import "@/styles/global.css";
 import { GoogleAnalytics } from "@/components/common/GoogleAnalytic";
+import { Toaster } from "@/components/ui/sonner";
 
 interface Props {
   bodyClass?: string;
@@ -29,6 +30,7 @@ const { bodyClass, title, specialDescription } = Astro.props;
 
   <body class={`min-h-screen flex flex-col ${bodyClass}`}>
     <GoogleAnalytics gtagId={GA_ID} client:only="react" />
+    <Toaster client:load />
 
     <Nav currentPath={Astro.url.pathname} client:load />
 

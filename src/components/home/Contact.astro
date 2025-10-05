@@ -1,6 +1,7 @@
 ---
 import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
+import CopyEmailButton from "@/components/common/CopyButton";
 import { MY_EMAIL } from "@/data/consts";
 import Resume from "@/assets/home/resume-Zhenhao-Yang.pdf";
 ---
@@ -14,14 +15,24 @@ import Resume from "@/assets/home/resume-Zhenhao-Yang.pdf";
       I'm always interested in new opportunities and exciting projects. Let's
       discuss how we can bring your ideas to life.
     </p>
+    <div
+      class="prose prose-code:rounded-md prose-code:text-sm prose-code:font-mono prose-code:text-gray-800 sm:w-1/2 w-full mx-auto mt-2"
+    >
+      <pre
+        class="flex justify-between items-center h-12 overflow-hidden">
+        <span>{MY_EMAIL}</span>
+        <CopyEmailButton client:load text={MY_EMAIL} type="Email" />
+      </pre>
+    </div>
+
     <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
-      <a href={`mailto:${MY_EMAIL}`} target="_blank">
+      <a href={`mailto:${MY_EMAIL}`} target="_blank" class="w-full">
         <Button size="lg" className="w-full">
           <Mail className="h-4 w-4 mr-2" />
           Send Email
         </Button>
       </a>
-      <a href={Resume} target="_blank">
+      <a href={Resume} target="_blank" class="w-full">
         <Button size="lg" variant="outline" className="w-full">
           Download Resume
         </Button>

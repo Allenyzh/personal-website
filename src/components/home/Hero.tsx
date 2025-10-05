@@ -60,7 +60,7 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="flex items-center justify-center">
+        <div className="flex items-center lg:justify-end justify-center ">
           <img
             src={hero.src}
             width="400"
