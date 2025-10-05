@@ -14,12 +14,12 @@ import { Badge } from "@/components/ui/badge";
 
 const projects = (await getCollection("projects")).sort(
   (a, b) =>
-    b.data.order - a.data.order ||
-    b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+    b.data.pubDate.valueOf() - a.data.pubDate.valueOf() ||
+    b.data.order - a.data.order
 );
 
 // Find featured project (first project with showOnHomePage)
-const featuredProject = projects.find((project) => project.data.showOnHomePage);
+const featuredProject = projects.find((project) => project.data.featured);
 ---
 
 <BaseLayout

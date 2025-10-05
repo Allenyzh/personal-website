@@ -1,0 +1,81 @@
+---
+title: "InputDateMask"
+description: "A Vue component that provides an input field with a date mask, ensuring users enter dates in the correct format (MM/DD/YYYY)."
+pubDate: 2025-10-05
+reviseDate: null
+author: zhenhao yang
+heroImg: ""
+showOnHomePage: true
+featured: true
+order: 2
+tech: ["vue", "shadcn", "tailwindcss"]
+github: "https://github.com/hugcanada/PrimeVueKit/tree/main/packages/primevuekit"
+githubDisable: false
+live: ""
+liveDisable: true
+slug: inputdatemask
+---
+
+import PostButton from "@/components/common/PostButton";
+
+<PostButton
+  items={[
+    {
+      href: "https://github.com/hugcanada/PrimeVueKit/tree/main/packages/primevuekit",
+      type: "code",
+    },
+  ]}
+/>
+
+InputDateMask is a custom Vue 3 component built on top of PrimeVue, combining the power of masked input and inline date picking. It allows users to input or select dates in a consistent, validated, and formatted manner. This component is part of the Prime Kit open-source UI collection and can be installed via pnpm or npm
+
+## Installation
+
+```bash
+npm install primevuekit
+```
+
+## Usage
+
+### Import individual components
+
+```javascript
+import { InputDateMask } from "primevuekit";
+```
+
+### Import component with styles
+
+```javascript
+import { InputDateMask } from "primevuekit";
+import "primevuekit/inputdatemask/style";
+```
+
+### Use with plugin
+
+```javascript
+import { createApp } from "vue";
+import PrimeVueKit from "primevuekit";
+
+const app = createApp(App);
+app.use(PrimeVueKit);
+```
+
+## Components
+
+### InputDateMask
+
+A specialized date input component with mask functionality.
+
+```vue
+<template>
+  <InputDateMask
+    v-model="date"
+    date-format="dd/mm/yyyy"
+    place-holder="DD/MM/YYYY"
+  />
+</template>
+```
+
+## License
+
+MIT

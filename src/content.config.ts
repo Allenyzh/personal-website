@@ -35,6 +35,7 @@ const projects = defineCollection({
       author: z.string(),
       heroImg: image().optional(),
       showOnHomePage: z.boolean().default(false),
+      featured: z.boolean().default(false),
       order: z.number().default(0),
       tech: z.array(z.string()).default([]),
       github: z.string().optional(),
