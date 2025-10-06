@@ -26,7 +26,7 @@ export const skillCategories: SkillCategory[] = [
   {
     title: "DevOps & Tools",
     icon: Code,
-    skills: ["Vercel", "Git"],
+    skills: ["Cloudflare", "Vercel", "Git"],
     description: "Development and deployment tools",
   },
   {
