@@ -84,15 +84,16 @@ export default function Skills({ className }: { className?: string }) {
                         "hover:bg-purple-500 hover:text-white border-purple-200 hover:border-purple-500", // Design
                       ];
                       return (
-                        <Badge
-                          key={skillIndex}
-                          variant="secondary"
-                          className={`transition-all duration-200 cursor-default border ${
-                            badgeColors[index % badgeColors.length]
-                          }`}
-                        >
-                          {skill}
-                        </Badge>
+                        <a href={skill.link} key={skillIndex} target="_blank">
+                          <Badge
+                            variant="secondary"
+                            className={`transition-all duration-200 border ${
+                              badgeColors[index % badgeColors.length]
+                            }`}
+                          >
+                            {skill.name}
+                          </Badge>
+                        </a>
                       );
                     })}
                   </div>

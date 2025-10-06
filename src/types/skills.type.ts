@@ -1,12 +1,16 @@
+interface Skill {
+  name: string;
+  link: string;
+}
+
 interface SkillCategory {
   title: string;
   icon: React.ComponentType<{ className?: string }>;
-  skills: string[];
+  skills: Skill[];
   description?: string;
 }
 
 interface SkillsProps {
   className?: string;
 }
-
-export type { SkillCategory, SkillsProps };
+export type { Skill, SkillCategory, SkillsProps };
