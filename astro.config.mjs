@@ -24,7 +24,10 @@ export default defineConfig({
     },
   },
 
-  adapter: cloudflare(),
+  adapter: cloudflare({
+    imageService: "compile",
+  }),
+
   server: {
     host: "0.0.0.0",
     // allowedHosts: ['local.watsonbio.com'],

@@ -6,6 +6,7 @@ import { SITE_DESCRIPTION, SITE_TITLE } from "@/data/consts";
 import "@/styles/global.css";
 import { GoogleAnalytics } from "@/components/common/GoogleAnalytic";
 import { Toaster } from "@/components/ui/sonner";
+import Avatar from "/public/avatar.png";
 
 interface Props {
   bodyClass?: string;
@@ -23,6 +24,7 @@ const { bodyClass, title, specialDescription } = Astro.props;
       title={title ? `${title} | ${SITE_TITLE}` : SITE_TITLE}
       description={specialDescription ? specialDescription : SITE_DESCRIPTION}
       keywords="portfolio, zhenhao yang, 杨镇颢, allen yang, web developer, software engineer, full-stack developer, astro, javascript, typescript, react, nodejs, web development, programming, montreal, canada, quebec, personal website, personal portfolio, blog, projects, about me, contact"
+      image={Avatar}
     />
 
     <slot name="customCss" />

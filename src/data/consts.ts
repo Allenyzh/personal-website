@@ -3,7 +3,7 @@
 
 export const SITE_TITLE = "Zhenhao Yang's portfolio";
 export const SITE_DESCRIPTION =
-  "Discover Allen's full-stack web development portfolio based in North America, featuring modern front-end and back-end projects built with the latest technologies.";
+  "Welcome to my portfolio website! I'm Zhenhao Yang, a passionate full-stack developer dedicated to crafting seamless web experiences. Explore my projects, skills, and journey in the world of web development.";
 
 export const MY_NAME = "Zhenhao Yang";
 export const MY_TITLE = "Full Stack Developer";
