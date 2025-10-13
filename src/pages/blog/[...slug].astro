@@ -6,14 +6,38 @@ import FormattedDate from "@/components/FormattedDate.astro";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
-  return posts.map((post) => ({
-    params: { slug: post.data.slug || post.id },
-    props: post,
-  }));
-}
-type Props = CollectionEntry<"blog">;
+  return posts.map((post, index) => {
+    // 计算上一个和下一个博客的索引（循环）
+    const prevIndex = index === 0 ? posts.length - 1 : index - 1;
+    const nextIndex = index === posts.length - 1 ? 0 : index + 1;
 
-const post = Astro.props;
+    const prevPost = posts[prevIndex];
+    const nextPost = posts[nextIndex];
+
+    return {
+      params: { slug: post.data.slug || post.id },
+      props: {
+        post,
+        prevPost: {
+          title: prevPost.data.title,
+          slug: prevPost.data.slug || prevPost.id,
+        },
+        nextPost: {
+          title: nextPost.data.title,
+          slug: nextPost.data.slug || nextPost.id,
+        },
+      },
+    };
+  });
+}
+
+type Props = {
+  post: CollectionEntry<"blog">;
+  prevPost: { title: string; slug: string };
+  nextPost: { title: string; slug: string };
+};
+
+const { post, prevPost, nextPost } = Astro.props;
 const { Content } = await render(post);
 ---
 
@@ -36,6 +60,33 @@ const { Content } = await render(post);
       class="prose prose-headings:text-article-primary prose-p:text-base/8 prose-p:tracking-wide prose-figcaption:text-xs prose-img:min-w-2xs prose-img:max-w-[21.5rem] prose-img:xs:min-w-xs prose-img:xs:max-w-sm prose-img:sm:min-w-sm prose-img:sm:max-w-lg prose-img:md:min-w-lg prose-img:md:max-w-3xl prose-img:shadow-lg prose-img:rounded prose-h4:mb-12 max-w-none prose-code:before:content-[''] prose-code:after:content-[''] prose-code:bg-gray-200 prose-code:px-2 prose-code:py-1 prose-code:rounded-md prose-code:text-sm prose-code:font-mono prose-code:text-gray-800"
     >
       <Content />
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="mt-12 py-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Previous Button -->
+        <a
+          href={`/blog/${prevPost.slug}`}
+          class="group flex flex-col p-4 rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-200"
+        >
+          <span class="text-sm text-muted-foreground mb-1">PREV</span>
+          <span class="font-medium text-lg transition-colors">
+            {prevPost.title}
+          </span>
+        </a>
+
+        <!-- Next Button -->
+        <a
+          href={`/blog/${nextPost.slug}`}
+          class="group flex flex-col p-4 rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 text-right"
+        >
+          <span class="text-sm text-muted-foreground mb-1">NEXT</span>
+          <span class="font-medium text-lg transition-colors">
+            {nextPost.title}
+          </span>
+        </a>
+      </div>
     </div>
   </div>
 </BaseLayout>
