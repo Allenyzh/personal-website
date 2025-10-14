@@ -7,14 +7,14 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Clock } from "lucide-react";
 import { Github } from "@/components/common/Github"; // Adjust the import path as necessary
 import type { CollectionEntry } from "astro:content";
 
 export default function Projects({
   projects,
 }: {
-  projects: CollectionEntry<"projects">[];
+  projects: (CollectionEntry<"projects"> & { readingTime: string })[];
 }) {
   return (
     <>
@@ -28,7 +28,7 @@ export default function Projects({
               <Badge variant="outline" className="text-xs">
                 Project
               </Badge>
-              <span className="text-xs text-muted-foreground">
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
                 <time dateTime={project.data.pubDate.toISOString()}>
                   {project.data.pubDate.toLocaleDateString("en-us", {
                     year: "numeric",
@@ -36,7 +36,11 @@ export default function Projects({
                     day: "numeric",
                   })}
                 </time>
-              </span>
+                <div className="flex items-center gap-1">
+                  <Clock className="h-3 w-3 -translate-y-[1.25px]" />
+                  <span>{project.readingTime}</span>
+                </div>
+              </div>
             </div>
             <CardTitle>{project.data.title}</CardTitle>
             <CardDescription>{project.data.description}</CardDescription>

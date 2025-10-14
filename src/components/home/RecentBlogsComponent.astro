@@ -1,0 +1,16 @@
+---
+import { getCollection } from "astro:content";
+import readingTime from "reading-time";
+import RecentBlogs from "@/components/home/RecentBlogs";
+
+const posts = await getCollection("blog");
+const filteredPosts = posts.filter((post) => post.data.showOnHomePage);
+const sortedPosts = filteredPosts
+  .sort((a, b) => (b.data.order ?? 0) - (a.data.order ?? 0))
+  .map((post) => ({
+    ...post,
+    readingTime: readingTime(post.body || "").text,
+  }));
+---
+
+<RecentBlogs client:load posts={sortedPosts} />

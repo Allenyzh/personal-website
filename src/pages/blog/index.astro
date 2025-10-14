@@ -11,10 +11,15 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Clock } from "lucide-react";
+import readingTime from "reading-time";
 
-const posts = (await getCollection("blog")).sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-);
+const posts = (await getCollection("blog"))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .map((post) => ({
+    ...post,
+    readingTime: readingTime(post.body || "").text,
+  }));
 
 // Find featured post
 const featuredPost = posts.find((post) => post.data.isFeatured);
@@ -52,9 +57,15 @@ const featuredPost = posts.find((post) => post.data.isFeatured);
               <CardHeader className="pb-4">
                 <div class="flex items-center justify-between mb-2">
                   <Badge variant="secondary">Featured</Badge>
-                  <span class="text-sm text-muted-foreground">
-                    <FormattedDate date={featuredPost.data.pubDate} />
-                  </span>
+                  <div class="flex items-center gap-3 text-sm text-muted-foreground">
+                    <span>
+                      <FormattedDate date={featuredPost.data.pubDate} />
+                    </span>
+                    <div class="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      <span class="text-xs">{featuredPost.readingTime}</span>
+                    </div>
+                  </div>
                 </div>
                 <CardTitle className="text-2xl mb-2 hover:text-primary transition-colors">
                   {featuredPost.data.title}
@@ -96,9 +107,15 @@ const featuredPost = posts.find((post) => post.data.isFeatured);
                     <Badge variant="outline" className="text-xs">
                       Article
                     </Badge>
-                    <span class="text-xs text-muted-foreground">
-                      <FormattedDate date={post.data.pubDate} />
-                    </span>
+                    <div class="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span>
+                        <FormattedDate date={post.data.pubDate} />
+                      </span>
+                      <div class="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        <span>{post.readingTime}</span>
+                      </div>
+                    </div>
                   </div>
                   <CardTitle className="text-lg leading-tight mb-2 hover:text-primary transition-colors line-clamp-2">
                     {post.data.title}

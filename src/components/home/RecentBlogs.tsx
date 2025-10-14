@@ -7,17 +7,17 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, ArrowRight, BookOpen } from "lucide-react";
+import { Clock, ArrowRight, BookOpen } from "lucide-react";
 
-import { type CollectionEntry, getCollection, render } from "astro:content";
-const posts = await getCollection("blog");
-const filteredPosts = posts.filter((post) => post.data.showOnHomePage);
-const sortedPosts = filteredPosts.sort(
-  (a, b) => (b.data.order ?? 0) - (a.data.order ?? 0)
-);
-const hasPosts = sortedPosts.length > 0;
+import type { CollectionEntry } from "astro:content";
 
-export default function RecentBlogs({ className }: { className?: string }) {
+export default function RecentBlogs({
+  className,
+  posts,
+}: {
+  className?: string;
+  posts: (CollectionEntry<"blog"> & { readingTime: string })[];
+}) {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -26,21 +26,23 @@ export default function RecentBlogs({ className }: { className?: string }) {
     });
   };
 
+  const hasPosts = posts.length > 0;
+
   return (
     <section
       id="blog"
-      className={`container px-4 py-24 md:py-32 ${className} ${
+      className={`container px-4 py-12 md:py-24 ${className} ${
         !hasPosts ? "hidden" : ""
       }`}
     >
       <div className="mx-auto max-w-6xl">
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-emerald-500/10 to-purple-500/10 border border-emerald-200 mb-4">
+          {/* <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-emerald-500/10 to-purple-500/10 border border-emerald-200 mb-4">
             <BookOpen className="h-4 w-4 text-emerald-600" />
             <span className="text-sm font-medium text-emerald-700">
               Latest Insights
             </span>
-          </div>
+          </div> */}
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
             Recent Blog Posts
           </h2>
@@ -51,7 +53,7 @@ export default function RecentBlogs({ className }: { className?: string }) {
         </div>
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {sortedPosts.map((post, index) => (
+          {posts.map((post, index) => (
             <a href={`/blog/${post.data.slug || post.id}`} key={index}>
               <Card
                 key={post.id}
@@ -66,12 +68,11 @@ export default function RecentBlogs({ className }: { className?: string }) {
                     </Badge>
                     <div className="flex items-center gap-4 text-xs text-muted-foreground h-3">
                       <div className="flex items-center gap-1 h-3">
-                        <Calendar className="h-3 w-3" />
                         <span>{formatDate(post.data.pubDate.toString())}</span>
                       </div>
                       <div className="flex items-center gap-1 h-3">
-                        <Clock className="h-3 w-3" />
-                        <span>5 min read</span>
+                        <Clock className="h-3 w-3 -translate-y-[1.25px]" />
+                        <span>{post.readingTime}</span>
                       </div>
                     </div>
                   </div>
@@ -104,10 +105,11 @@ export default function RecentBlogs({ className }: { className?: string }) {
 
         {/* View All Posts Button */}
         <div className="text-center mt-12">
-          <Button size="lg" variant="outline" asChild>
+          <Button size="lg" variant="outline" className="group" asChild>
             <a href="/blog">
               <BookOpen className="h-4 w-4 mr-2" />
-              View All Posts
+              <span className="translate-y-[1.2px]">View All Posts</span>
+              <ArrowRight className="group-hover:translate-x-1 transition-all duration-200" />
             </a>
           </Button>
         </div>

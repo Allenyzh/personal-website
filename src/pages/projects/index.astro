@@ -11,12 +11,19 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Clock } from "lucide-react";
+import readingTime from "reading-time";
 
-const projects = (await getCollection("projects")).sort(
-  (a, b) =>
-    b.data.pubDate.valueOf() - a.data.pubDate.valueOf() ||
-    b.data.order - a.data.order
-);
+const projects = (await getCollection("projects"))
+  .sort(
+    (a, b) =>
+      b.data.pubDate.valueOf() - a.data.pubDate.valueOf() ||
+      b.data.order - a.data.order
+  )
+  .map((project) => ({
+    ...project,
+    readingTime: readingTime(project.body || "").text,
+  }));
 
 // Find featured project (first project with showOnHomePage)
 const featuredProject = projects.find((project) => project.data.featured);
@@ -60,9 +67,15 @@ const featuredProject = projects.find((project) => project.data.featured);
               <CardHeader className="pb-4">
                 <div class="flex items-center justify-between mb-2">
                   <Badge variant="secondary">Featured</Badge>
-                  <span class="text-sm text-muted-foreground">
-                    <FormattedDate date={featuredProject.data.pubDate} />
-                  </span>
+                  <div class="flex items-center gap-3 text-sm text-muted-foreground">
+                    <span>
+                      <FormattedDate date={featuredProject.data.pubDate} />
+                    </span>
+                    <div class="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      <span class="text-xs">{featuredProject.readingTime}</span>
+                    </div>
+                  </div>
                 </div>
                 <CardTitle className="text-2xl mb-2 hover:text-primary transition-colors">
                   {featuredProject.data.title}
@@ -112,9 +125,15 @@ const featuredProject = projects.find((project) => project.data.featured);
                     <Badge variant="outline" className="text-xs">
                       Project
                     </Badge>
-                    <span class="text-xs text-muted-foreground">
-                      <FormattedDate date={project.data.pubDate} />
-                    </span>
+                    <div class="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span>
+                        <FormattedDate date={project.data.pubDate} />
+                      </span>
+                      <div class="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        <span>{project.readingTime}</span>
+                      </div>
+                    </div>
                   </div>
                   <CardTitle className="text-lg leading-tight mb-2 hover:text-primary transition-colors line-clamp-2">
                     {project.data.title}

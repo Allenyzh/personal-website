@@ -27,3 +27,4 @@ wrangler.jsonc
 wrangler.toml
 
 .wrangler/
+.hide/
