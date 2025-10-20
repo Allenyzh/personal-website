@@ -4,6 +4,7 @@ import FormattedDate from "@/components/FormattedDate.astro";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Clock } from "@lucide/astro";
+import NextPrevBtnGroup from "@/components/common/NextPrevBtnGroup.astro";
 
 export interface Props {
   title: string;
@@ -103,30 +104,10 @@ const {
     </div>
 
     <!-- Navigation Buttons -->
-    <div class="mt-12 py-8">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Previous Button -->
-        <a
-          href={`/${collectionType}/${prevItem.slug}`}
-          class="group flex flex-col p-4 rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-200"
-        >
-          <span class="text-sm text-muted-foreground mb-1">PREV</span>
-          <span class="font-medium text-lg transition-colors">
-            {prevItem.title}
-          </span>
-        </a>
-
-        <!-- Next Button -->
-        <a
-          href={`/${collectionType}/${nextItem.slug}`}
-          class="group flex flex-col p-4 rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 text-right"
-        >
-          <span class="text-sm text-muted-foreground mb-1">NEXT</span>
-          <span class="font-medium text-lg transition-colors">
-            {nextItem.title}
-          </span>
-        </a>
-      </div>
-    </div>
+    <NextPrevBtnGroup
+      prevItem={prevItem}
+      nextItem={nextItem}
+      collectionType={collectionType}
+    />
   </div>
 </BaseLayout>

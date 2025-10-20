@@ -1,0 +1,51 @@
+---
+import { ArrowLeft, ArrowRight } from "@lucide/astro";
+
+export interface Props {
+  prevItem: { title: string; slug: string };
+  nextItem: { title: string; slug: string };
+  collectionType: "blog" | "projects";
+}
+
+const { prevItem, nextItem, collectionType } = Astro.props;
+---
+
+<div class="mt-12 py-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- Previous Button -->
+    <a
+      href={`/${collectionType}/${prevItem.slug}`}
+      class="group flex flex-col p-4 rounded-lg border border-gray-200 hover:outline-1 hover:outline-black"
+    >
+      <ArrowLeft
+        class="absolute text-muted-foreground h-5 -translate-y-0.5 group-hover:-translate-x-1.5 transition-all duration-300 opacity-0 group-hover:opacity-100"
+      />
+      <span
+        class="text-sm text-muted-foreground mb-1 group-hover:translate-x-5 transition-all duration-300"
+      >
+        PREV
+      </span>
+      <span class="font-medium text-lg transition-colors">
+        {prevItem.title}
+      </span>
+    </a>
+
+    <!-- Next Button -->
+    <a
+      href={`/${collectionType}/${nextItem.slug}`}
+      class="group flex flex-col p-4 rounded-lg border border-gray-200 hover:outline-1 hover:outline-black items-end"
+    >
+      <ArrowRight
+        class="absolute text-muted-foreground h-5 -translate-y-0.5 group-hover:translate-x-1.5 transition-all duration-300 opacity-0 group-hover:opacity-100"
+      />
+      <span
+        class="text-sm text-muted-foreground mb-1 group-hover:-translate-x-5 transition-all duration-300 flex items-center"
+      >
+        NEXT
+      </span>
+      <span class="font-medium text-lg transition-colors">
+        {nextItem.title}
+      </span>
+    </a>
+  </div>
+</div>
