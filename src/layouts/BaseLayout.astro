@@ -6,6 +6,7 @@ import { SITE_DESCRIPTION, SITE_TITLE } from "@/data/consts";
 import "@/styles/global.css";
 import { GoogleAnalytics } from "@/components/common/GoogleAnalytic";
 import { Toaster } from "@/components/ui/sonner";
+import ChristmasSnow from "@/components/common/ChristmasSnow";
 import Avatar from "/public/avatar.png";
 
 interface Props {
@@ -31,6 +32,7 @@ const { bodyClass, title, specialDescription } = Astro.props;
   </head>
 
   <body class={`min-h-screen flex flex-col ${bodyClass}`}>
+    <ChristmasSnow client:load />
     <GoogleAnalytics gtagId={GA_ID} client:only="react" />
     <Toaster client:load />
 
