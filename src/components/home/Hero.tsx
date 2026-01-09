@@ -3,8 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Github, LinkedIn } from "@/components/common/Github";
 import hero from "@/assets/home/heroopt.jpeg";
 import { MY_EMAIL, MY_GITHUB, MY_LINKEDIN } from "@/data/consts";
+import { getCollection } from "astro:content";
 
-export default function Hero() {
+export default async function Hero() {
+  const experiences = await getCollection("experience");
+  const experience = experiences[0];
+
+  const { currentJob, currentCompany, currentCompanyUrl } = experience?.data;
   return (
     <section className="container px-4 py-16 md:py-24 min-h-screen flex items-center">
       <div className="mx-auto grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
@@ -13,9 +18,21 @@ export default function Hero() {
             <h2 className="text-lg font-bold  sm:text-2xl xl:text-3xl text-gray-500">
               Hello, I am ...
             </h2>
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
+
+            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl">
               ZHENHAO YANG
             </h1>
+            <div className="mb-2 -translate-y-2 text-base font-medium text-gray-600 sm:text-xl">
+              {currentJob} @{" "}
+              <a
+                className="underline text-[#2fafda]"
+                target="_blank"
+                href={currentCompanyUrl}
+              >
+                {currentCompany}
+              </a>
+            </div>
+
             <p className="max-w-[600px] text-muted-foreground md:text-xl">
               I build modern web applications with cutting-edge technologies.
               Passionate about creating scalable solutions that deliver
