@@ -28,14 +28,14 @@ export default function CopyButton({ text, type }: Props) {
   // Animation for the checkmark drawing effect
   const checkmarkSpring = useSpring({
     strokeDashoffset: copied ? 0 : CHECKMARK_LENGTH,
-    config: { tension: 200, friction: 20 },
+    config: { tension: 200, friction: 20, clamp: true },
     delay: copied ? 100 : 0,
   });
 
   // Animation for the circle drawing effect
   const circleSpring = useSpring({
     strokeDashoffset: copied ? 0 : CIRCLE_LENGTH,
-    config: { tension: 180, friction: 20 },
+    config: { tension: 180, friction: 20, clamp: true },
   });
 
   // Animation for icon transition (copy icon fade out, check icon fade in)
