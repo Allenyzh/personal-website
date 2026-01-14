@@ -28,3 +28,8 @@ wrangler.toml
 
 .wrangler/
 .hide/
+
+# testing output
+coverage/
+test-results/
+playwright-report/
