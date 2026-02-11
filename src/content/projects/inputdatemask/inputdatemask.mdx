@@ -17,6 +17,7 @@ slug: inputdatemask
 ---
 
 import PostButton from "@/components/common/PostButton";
+import CodeBlockWithCopy from "@/components/common/CodeBlockWithCopy.astro";
 
 <PostButton
   items={[
@@ -31,34 +32,30 @@ InputDateMask is a custom Vue 3 component built on top of PrimeVue, combining th
 
 ## Installation
 
-```bash
-npm install primevuekit
-```
+<CodeBlockWithCopy code={`pnpm add primevuekit`} lang="bash" />
 
 ## Usage
 
 ### Import individual components
 
-```javascript
-import { InputDateMask } from "primevuekit";
-```
+<CodeBlockWithCopy
+  code={`import { InputDateMask } from "primevuekit";`}
+  lang="javascript"
+/>
 
 ### Import component with styles
 
-```javascript
-import { InputDateMask } from "primevuekit";
-import "primevuekit/inputdatemask/style";
-```
+<CodeBlockWithCopy
+  code={`import { InputDateMask } from "primevuekit";\nimport "primevuekit/inputdatemask/style";`}
+  lang="javascript"
+/>
 
 ### Use with plugin
 
-```javascript
-import { createApp } from "vue";
-import PrimeVueKit from "primevuekit";
-
-const app = createApp(App);
-app.use(PrimeVueKit);
-```
+<CodeBlockWithCopy
+  code={`import { createApp } from "vue";\nimport PrimeVueKit from "primevuekit";\n\nconst app = createApp(App);\napp.use(PrimeVueKit);`}
+  lang="javascript"
+/>
 
 ## Components
 
@@ -66,15 +63,10 @@ app.use(PrimeVueKit);
 
 A specialized date input component with mask functionality.
 
-```vue
-<template>
-  <InputDateMask
-    v-model="date"
-    date-format="dd/mm/yyyy"
-    place-holder="DD/MM/YYYY"
-  />
-</template>
-```
+<CodeBlockWithCopy
+  code={`<template>\n  <InputDateMask\n    v-model="date"\n    date-format="dd/mm/yyyy"\n    place-holder="DD/MM/YYYY"\n  />\n</template>`}
+  lang="vue"
+/>
 
 ## License
 

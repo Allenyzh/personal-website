@@ -17,6 +17,7 @@ slug: cli-mcp
 ---
 
 import PostButton from "@/components/common/PostButton";
+import CodeBlockWithCopy from "@/components/common/CodeBlockWithCopy.astro";
 
 <PostButton
   items={[
@@ -33,7 +34,4 @@ This is a MCP for command-line that can munipulate you mac. It is built with Pyt
 
 Fork the repository and clone it to your local machine.
 
-```shell
-pnpm i
-pnpm build
-```
+<CodeBlockWithCopy code={`pnpm i\npnpm build`} lang="shell" />

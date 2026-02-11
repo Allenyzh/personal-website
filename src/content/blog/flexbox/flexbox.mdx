@@ -16,6 +16,9 @@ liveDisable: true
 slug: "css-tricks-flexbox"
 ---
 
+import CopyBottom from "@/components/common/CopyButton";
+import CodeBlockWithCopy from "@/components/common/CodeBlockWithCopy.astro";
+
 I have recently worked on several projects where I extensively used Flexbox for front-end layout. I found it incredibly useful and would like to share some tips through this article.
 
 ## What is flexbox
@@ -28,28 +31,15 @@ Think about when you are trying to arrange an element at the **vertical** and **
 
 **One classic way is using Absolute Positioning.**
 
-```html
-<div class="parent-container">
-  <div class="child-element">
-    I'm centered!
-  </div>
-</div>
-```
+<CodeBlockWithCopy
+  code={`<div class="parent-container">\n   <div class="child-element">\n     I'm centered!\n   </div>\n</div>`}
+  lang="html"
+/>
 
-```css
-.parent-container {
-    position: relative;
-    height: 100vh;
-    background-color: #f0f0f0;
-}
-
-.child-element {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-```
+<CodeBlockWithCopy
+  code={`.parent-container {\n  position: relative;\n  height: 100vh;\n  background-color: #f0f0f0;\n}\n\n.child-element {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n}`}
+  lang="css"
+/>
 
 This method is absoulately ok, but the way it works is:
 
@@ -62,18 +52,16 @@ This method is absoulately ok, but the way it works is:
 
 ### See the flexbox way below
 
-```html
-<div class="flex-element">I'm centered!</div>
-```
+<CodeBlockWithCopy
+  code={`<div class="flex-element">I'm centered!</div>`}
+  lang="html"
+/>
 
-```css
-.flex-element {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-```
+<CodeBlockWithCopy
+  code={`.flex-element {\n  height: 100vh;\n  display: flex;\n  justify-content: center;\n  align-items: center;
+}`}
+  lang="css"
+/>
 
 Instead using a parent element, flexbox can do it by itself.
 
@@ -92,16 +80,13 @@ You are making a website that requires responsive design, the header and the foo
 
 In this case you can not set a fixed height for the content since the height of different devices varies, and here is the example how you can tackle this problem easily in flexbox.
 
-```html
-<body>
-    <header class="nav">Header</header>
-    <div class="content">Content</div>
-    <footer class="footer">Footer</footer>
-</body>
-```
+<CodeBlockWithCopy
+  code={`<body>\n  <header class="nav">\n    Header\n  </header>\n  <div class="content">\n    Content\n  </div>\n  <footer class="footer">\n    Footer\n  </footer>\n</body>`}
+  lang="html"
+/>
 
-```css
-body,
+<CodeBlockWithCopy
+  code={`body,
 html {
     margin: 0;
     padding: 0;
@@ -128,8 +113,9 @@ html {
     text-align: center;
     padding: 1em;
     bottom: 0;
-}
-```
+}`}
+  lang="css"
+/>
 
 **Below is the final effects.**
 

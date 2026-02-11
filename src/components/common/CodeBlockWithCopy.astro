@@ -1,0 +1,24 @@
+---
+import { Code } from "astro:components";
+import CopyButton from "@/components/common/CopyButton";
+
+interface Props {
+  code: string;
+  lang?: string;
+}
+
+const { code, lang = "html" } = Astro.props as any;
+---
+
+<div class="relative group">
+  <div class="[&>pre]:!pr-12 [&>pre]:!overflow-x-auto">
+    <Code
+      class="whitespace-pre-wrap break-all min-w-0"
+      code={code}
+      lang={lang as any}
+    />
+  </div>
+  <div class="absolute top-2 right-2">
+    <CopyButton client:load text={code} type="Code" />
+  </div>
+</div>
