@@ -1,6 +1,6 @@
 interface Skill {
   name: string;
-  link: string;
+  link?: string;
 }
 
 interface SkillCategory {
@@ -8,6 +8,9 @@ interface SkillCategory {
   icon: React.ComponentType<{ className?: string }>;
   skills: Skill[];
   description?: string;
+  code?: string;
+  slug?: string;
+  level?: number;
 }
 
 interface SkillsProps {

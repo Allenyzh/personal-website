@@ -1,121 +1,66 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Code } from "lucide-react";
 import { skillCategories } from "@/data/skills";
 
-export default function Skills({ className }: { className?: string }) {
-  // Define color schemes for each category
-  const getIconStyles = (index: number) => {
-    const colorSchemes = [
-      {
-        // Frontend - Blue theme
-        bg: "bg-blue-100 group-hover:bg-blue-200",
-        icon: "text-blue-600",
-      },
-      {
-        // Backend - Green theme
-        bg: "bg-green-100 group-hover:bg-green-200",
-        icon: "text-green-600",
-      },
-      {
-        // DevOps & Tools - Orange theme
-        bg: "bg-orange-100 group-hover:bg-orange-200",
-        icon: "text-orange-600",
-      },
-      {
-        // Design & UX - Purple theme
-        bg: "bg-purple-100 group-hover:bg-purple-200",
-        icon: "text-purple-600",
-      },
-    ];
-    return colorSchemes[index % colorSchemes.length];
-  };
+export default function Skills() {
+  const totalTools = skillCategories.reduce(
+    (n, c) => n + c.skills.length,
+    0
+  );
 
   return (
-    <section
-      id="skills"
-      className={`container px-4 py-12 md:py-24 bg-muted/50 ${className}`}
-    >
-      <div className="mx-auto max-w-6xl">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-            Skills & Technologies
-          </h2>
-          <p className="mt-4 text-muted-foreground md:text-xl">
-            Technologies I work with to bring ideas to life
-          </p>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-2 ">
-          {skillCategories.map((category, index) => {
-            const IconComponent = category.icon;
-            const iconStyles = getIconStyles(index);
-            return (
-              <Card
-                key={index}
-                className="group hover:shadow-lg transition-all duration-300"
-              >
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-3">
-                    <div
-                      className={`p-2 rounded-lg transition-colors ${iconStyles.bg}`}
-                    >
-                      <IconComponent className={`h-5 w-5 ${iconStyles.icon}`} />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold">
-                        {category.title}
-                      </h3>
-                      {category.description && (
-                        <p className="text-sm text-muted-foreground font-normal mt-1">
-                          {category.description}
-                        </p>
-                      )}
-                    </div>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {category.skills.map((skill, skillIndex) => {
-                      const badgeColors = [
-                        "hover:bg-blue-500 hover:text-white border-blue-200 hover:border-blue-500", // Frontend
-                        "hover:bg-green-500 hover:text-white border-green-200 hover:border-green-500", // Backend
-                        "hover:bg-orange-500 hover:text-white border-orange-200 hover:border-orange-500", // DevOps
-                        "hover:bg-purple-500 hover:text-white border-purple-200 hover:border-purple-500", // Design
-                      ];
-                      return (
-                        <a href={skill.link} key={skillIndex} target="_blank">
-                          <Badge
-                            variant="secondary"
-                            className={`transition-all duration-200 border ${
-                              badgeColors[index % badgeColors.length]
-                            }`}
-                          >
-                            {skill.name}
-                          </Badge>
-                        </a>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-
-        {/* Additional Skills Summary */}
-        {/* <div className="mt-16 text-center">
-          <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-200/50 mb-4 shadow-sm">
-            <Code className="h-4 w-4 text-blue-600" />
-            <span className="text-sm font-medium bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {skillCategories.reduce(
-                (total, category) => total + category.skills.length,
-                0
-              )}
-              + Technologies Mastered
-            </span>
+    <section className="border-b border-[#d9d8d3] py-14 md:py-20" id="skills">
+      <div className="mx-auto container px-6 md:px-10">
+        <div className="mb-12 grid grid-cols-1 items-baseline gap-1 border-b border-[#d9d8d3] pb-5 md:grid-cols-[140px_1fr_auto] md:gap-6">
+          <div className="font-mono text-[13px] text-[#6b6b66]">
+            — 02 / skills
           </div>
-        </div> */}
+          <h2 className="m-0 text-[32px] font-semibold tracking-[-0.02em]">
+            Stack &amp; Tools
+          </h2>
+          <div className="font-mono text-xs text-[#6b6b66]">
+            {skillCategories.length} domains · {totalTools} tools
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-px border border-[#d9d8d3] bg-[#d9d8d3]">
+          {skillCategories.map((category, index) => (
+            <div
+              key={category.title}
+              className="flex min-h-[240px] flex-1 basis-full flex-col gap-3.5 bg-[#fafaf9] p-5 transition-colors group hover:bg-[#f0efec] md:basis-[calc(50%-1px)] md:p-6 lg:basis-[calc(33.3333%-1px)]"
+            >
+              <div className="flex items-baseline justify-between font-mono text-xs text-[#6b6b66]">
+                <category.icon className="h-4 w-4" />
+                <span>{category.slug ?? category.title.toLowerCase()}</span>
+              </div>
+              <h3 className="m-0 text-[17px] font-semibold tracking-[-0.01em] text-[#0a0a0a]">
+                {category.title}
+              </h3>
+              {category.description && (
+                <p className="m-0 flex-1 font-mono text-[11px] leading-[1.5] text-[#6b6b66]">
+                  {category.description}
+                </p>
+              )}
+              <div className="flex flex-wrap gap-1">
+                {category.skills.map((skill) => (
+                  <a
+                    key={skill.name}
+                    href={skill.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-sm bg-[#f0efec] px-1.5 py-0.5 font-mono text-[10px] text-[#3a3a38] transition-colors hover:bg-[#0a0a0a] group-hover:bg-[#fafaf9] hover:text-[#fafaf9]"
+                  >
+                    {skill.name}
+                  </a>
+                ))}
+              </div>
+              <div className="relative mt-1 h-0.5 bg-[#d9d8d3]">
+                <div
+                  className="absolute left-0 top-0 h-full bg-[#0a0a0a]"
+                  style={{ width: `${category.level ?? 80}%` }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
