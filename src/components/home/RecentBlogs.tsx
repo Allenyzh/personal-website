@@ -1,15 +1,5 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Clock, ArrowRight, BookOpen } from "lucide-react";
-
 import type { CollectionEntry } from "astro:content";
+import ShadowButton from "@/components/common/ShadowButton";
 
 export default function RecentBlogs({
   className,
@@ -18,100 +8,75 @@ export default function RecentBlogs({
   className?: string;
   posts: (CollectionEntry<"blog"> & { readingTime: string })[];
 }) {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+  const formatDate = (date: Date) =>
+    new Intl.DateTimeFormat("en-US", {
+      month: "short",
       year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
+    })
+      .format(date)
+      .toLowerCase();
 
   const hasPosts = posts.length > 0;
+  const desktopColumns =
+    posts.length === 1
+      ? "min-[901px]:grid-cols-1"
+      : posts.length === 2
+        ? "min-[901px]:grid-cols-2"
+        : "min-[901px]:grid-cols-3";
 
   return (
     <section
       id="blog"
-      className={`container px-4 py-12 md:py-24 ${className} ${
+      className={`w-full scroll-mt-14 border-b border-[#d9d8d3] py-14 md:py-20 ${className ?? ""} ${
         !hasPosts ? "hidden" : ""
       }`}
     >
-      <div className="mx-auto max-w-6xl">
-        <div className="text-center mb-12">
-          {/* <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-emerald-500/10 to-purple-500/10 border border-emerald-200 mb-4">
-            <BookOpen className="h-4 w-4 text-emerald-600" />
-            <span className="text-sm font-medium text-emerald-700">
-              Latest Insights
-            </span>
-          </div> */}
-          <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-            Recent Blog Posts
+      <div className="container mx-auto px-6 md:px-10">
+        <div className="mb-12 grid grid-cols-1 items-baseline gap-1 border-b border-[#d9d8d3] pb-5 md:grid-cols-[140px_1fr_auto] md:gap-6">
+          <div className="font-mono text-[13px] text-[#6b6b66]">
+            — 04 / writing
+          </div>
+          <h2 className="m-0 text-[32px] font-semibold tracking-[-0.02em]">
+            Recent Posts
           </h2>
-          <p className="mt-4 text-muted-foreground md:text-xl">
-            Sharing knowledge and insights about web development, best
-            practices, and emerging technologies
-          </p>
+          <div className="font-mono text-xs text-[#6b6b66]">
+            latest from the blog
+          </div>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post, index) => (
-            <a href={`/blog/${post.data.slug || post.id}`} key={index}>
-              <Card
-                key={post.id}
-                className="group overflow-hidden hover:shadow-lg transition-all duration-300"
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between mb-2 h-6">
-                    <Badge
-                      className={`text-xs bg-emerald-100 text-emerald-700 hover:bg-emerald-200`}
-                    >
-                      Blog
-                    </Badge>
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground h-3">
-                      <div className="flex items-center gap-1 h-3">
-                        <span>{formatDate(post.data.pubDate.toString())}</span>
-                      </div>
-                      <div className="flex items-center gap-1 h-3">
-                        <Clock className="h-3 w-3 -translate-y-[1.25px]" />
-                        <span>{post.readingTime}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors">
-                    {post.data.title}
-                  </CardTitle>
-                  <CardDescription className="line-clamp-3">
-                    {post.data.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2 ">
-                    {post.data.tech.map((tag: string) => (
-                      <Badge key={tag} variant="outline" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="p-0 h-auto font-medium group/btn"
-                    asChild
-                  ></Button>
-                </CardContent>
-              </Card>
+        <div
+          className={`grid grid-cols-1 gap-px border border-[#d9d8d3] bg-[#d9d8d3] ${desktopColumns}`}
+        >
+          {posts.map((post) => (
+            <a
+              href={`/blog/${post.data.slug || post.id}`}
+              key={post.data.slug || post.id}
+              className="flex min-h-[200px] cursor-pointer flex-col gap-3 bg-[#fafaf9] p-6 transition-colors duration-200 hover:bg-[#f0efec]"
+            >
+              <div className="flex items-center justify-between font-mono text-[11px] text-[#6b6b66]">
+                <time dateTime={post.data.pubDate.toISOString()}>
+                  {formatDate(post.data.pubDate)}
+                </time>
+                <span>{post.data.tech[0] ?? "—"}</span>
+              </div>
+
+              <h3 className="m-0 text-lg font-semibold leading-[1.3] tracking-[-0.01em] [text-wrap:pretty]">
+                {post.data.title}
+              </h3>
+
+              <p className="m-0 flex-1 text-sm text-[#3a3a38] [text-wrap:pretty]">
+                {post.data.description}
+              </p>
+
+              <div className="mt-auto font-mono text-[11px] text-[#6b6b66]">
+                {post.readingTime} →
+              </div>
             </a>
           ))}
         </div>
 
-        {/* View All Posts Button */}
-        <div className="text-center mt-12">
-          <Button size="lg" variant="outline" className="group" asChild>
-            <a href="/blog">
-              <BookOpen className="h-4 w-4 mr-2" />
-              <span className="translate-y-[1.2px]">View All Posts</span>
-              <ArrowRight className="group-hover:translate-x-1 transition-all duration-200" />
-            </a>
-          </Button>
+        <div className="mt-8 flex justify-end">
+          <ShadowButton href="/blog">all posts →</ShadowButton>
         </div>
       </div>
     </section>
