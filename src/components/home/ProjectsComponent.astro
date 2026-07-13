@@ -1,45 +1,42 @@
 ---
 import { getCollection } from "astro:content";
 import Projects from "@/components/home/Projects";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
-import readingTime from "reading-time";
+import ShadowButton from "@/components/common/ShadowButton";
 
 const projects = await getCollection("projects");
 
 const sortedProjects = projects
   .filter((project) => project.data.showOnHomePage)
-  .sort((a, b) => a.data.order - b.data.order)
-  .map((project) => ({
-    ...project,
-    readingTime: readingTime(project.body || "").text,
-  }));
+  .sort(
+    (a, b) =>
+      Number(b.data.featured) - Number(a.data.featured) ||
+      a.data.order - b.data.order
+  );
 ---
 
-<section id="projects" class="container px-4 py-12 md:py-24">
-  <div class="mx-auto max-w-6xl">
-    <div class="text-center mb-12">
-      <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-        Recent Projects
+<section
+  id="projects"
+  class="w-full scroll-mt-14 border-b border-[#d9d8d3] py-14 md:py-20"
+>
+  <div class="container mx-auto px-6 md:px-10">
+    <div
+      class="mb-12 grid grid-cols-1 items-baseline gap-1 border-b border-[#d9d8d3] pb-5 md:grid-cols-[140px_1fr_auto] md:gap-6"
+    >
+      <div class="font-mono text-[13px] text-[#6b6b66]">— 03 / work</div>
+      <h2 class="m-0 text-[32px] font-semibold tracking-[-0.02em]">
+        Selected Projects
       </h2>
-      <p class="mt-4 text-muted-foreground md:text-xl">
-        Some of my recent work that I'm proud of
-      </p>
+      <span
+        class="font-mono text-xs text-[#6b6b66] transition-colors hover:text-[#0a0a0a]"
+      >
+        {sortedProjects.length} of {projects.length}
+    </span>
     </div>
 
-    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-      <Projects client:load projects={sortedProjects} />
-    </div>
-    <div class="flex justify-center align-center mt-16">
-      <Button variant="outline" className="group">
-        <a href="/projects" class="flex justify-center items-center gap-2">
-          <span class="translate-y-[1.2px]">View All Projects</span>
+    <Projects projects={sortedProjects} />
 
-          <ArrowRight
-            className="group-hover:translate-x-1 transition-all duration-200"
-          />
-        </a>
-      </Button>
+    <div class="mt-8 flex justify-end">
+      <ShadowButton href="/projects">view all projects →</ShadowButton>
     </div>
   </div>
 </section>
