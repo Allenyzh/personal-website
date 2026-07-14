@@ -1,39 +1,21 @@
-import { Github, LinkedIn } from "@/components/common/Github";
-import { Mail } from "lucide-react";
-import { MY_NAME, MY_EMAIL, MY_GITHUB, MY_LINKEDIN } from "@/data/consts";
+import { MY_NAME } from "@/data/consts";
 
 export default function Footer() {
-  const today = new Date();
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="border-t py-6 md:py-0">
-      <div className="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row mx-auto">
-        <div className="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-2 md:px-0">
-          <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
-            &copy; {today.getFullYear()} {MY_NAME}. All rights reserved.
-          </p>
+    <footer className="border-t border-[#d9d8d3] bg-[#fafaf9] py-8 font-mono text-xs text-[#6b6b66]">
+      <div className="container mx-auto flex flex-wrap items-center justify-between gap-4 px-6 md:px-10">
+        <div>
+          &copy; {currentYear} {MY_NAME} · built with care in Montreal
         </div>
-        <div className="flex items-center space-x-4">
-          <a
-            href={MY_GITHUB}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <Github className="h-5 w-5" />
-            <span className="sr-only">GitHub</span>
-          </a>
-          <a
-            href={MY_LINKEDIN}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <LinkedIn className="h-5 w-5" />
-            <span className="sr-only">LinkedIn</span>
-          </a>
-          <a
-            href={`mailto:${MY_EMAIL}`}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <Mail className="h-5 w-5" />
-            <span className="sr-only">Email</span>
-          </a>
+
+        <div className="flex items-center gap-2">
+          <span
+            aria-hidden="true"
+            className="h-1.5 w-1.5 animate-pulse rounded-full bg-[oklch(0.62_0.14_150)]"
+          />
+          <span>all systems operational</span>
         </div>
       </div>
     </footer>
