@@ -1,42 +1,75 @@
 ---
-import { Button } from "@/components/ui/button";
-import { Mail } from "lucide-react";
-import CopyEmailButton from "@/components/common/CopyButton";
-import { MY_EMAIL } from "@/data/consts";
-import Resume from "@/assets/home/resume-Zhenhao-Yang.pdf";
+import { MY_EMAIL, MY_GITHUB, MY_LINKEDIN } from "@/data/consts";
+import ShadowButton from "@/components/common/ShadowButton";
+import Blink from "@/components/common/Blink";
+import ContactChannels from "@/components/home/contact/ContactChannels.astro";
+import ContactChannel from "@/components/home/contact/ContactChannel.astro";
+
+const contactChannels = [
+  {
+    label: "email",
+    value: MY_EMAIL,
+    href: `mailto:${MY_EMAIL}`,
+  },
+  {
+    label: "github",
+    value: "@Allenyzh",
+    href: MY_GITHUB,
+    external: true,
+  },
+  {
+    label: "linkedin",
+    value: "/in/allenyzh",
+    href: MY_LINKEDIN,
+    external: true,
+  },
+  {
+    label: "location",
+    value: "Montreal, QC",
+  }
+];
 ---
 
-<section id="contact" class="container px-4 py-24 md:py-32 bg-muted/50">
-  <div class="mx-auto max-w-2xl text-center">
-    <h2 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-      Let's Work Together
-    </h2>
-    <p class="mt-4 text-muted-foreground md:text-xl/relaxed">
-      I'm always interested in new opportunities and exciting projects. Let's
-      discuss how we can bring your ideas to life.
-    </p>
-    <div
-      class="prose prose-code:rounded-md prose-code:text-sm prose-code:font-mono prose-code:text-gray-800 sm:w-1/2 w-full mx-auto mt-2"
-    >
-      <pre
-        class="flex justify-between items-center h-12 overflow-hidden">
-        <span>{MY_EMAIL}</span>
-        <CopyEmailButton client:load text={MY_EMAIL} type="Email" />
-      </pre>
+<section id="contact" class="bg-[#fafaf9] py-[72px] md:py-[120px]">
+  <div
+    class="container mx-auto grid grid-cols-1 gap-8 px-6 md:grid-cols-2 md:items-end md:gap-16 md:px-10"
+  >
+    <div>
+      <div
+        class="mb-7 flex items-center gap-2.5 font-mono text-xs text-[#6b6b66]"
+      >
+        — 05 / contact
+      </div>
+
+      <h2
+        class="mb-6 text-[clamp(40px,5.5vw,72px)] font-bold leading-none tracking-[-0.035em] text-[#0a0a0a]"
+      >
+        Let's build<br />something
+        <Blink width="0.35em" height="0.85em" className="ml-0 align-[-0.05em]" />
+      </h2>
+
+      <p class="mb-7 max-w-[460px] text-pretty text-[17px] text-[#3a3a38]">
+        Open to full-time roles and interesting contracts. Happy to chat about
+        web apps, devtools, AI products, or just the craft of shipping things.
+      </p>
+
+      <ShadowButton href={`mailto:${MY_EMAIL}`} variant="primary">
+        {MY_EMAIL}
+      </ShadowButton>
     </div>
 
-    <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
-      <a href={`mailto:${MY_EMAIL}`} target="_blank" class="w-full">
-        <Button size="lg" className="w-full">
-          <Mail className="h-4 w-4 mr-2" />
-          Send Email
-        </Button>
-      </a>
-      <a href={Resume} target="_blank" class="w-full">
-        <Button size="lg" variant="outline" className="w-full">
-          Download Resume
-        </Button>
-      </a>
-    </div>
+    <ContactChannels>
+      {
+        contactChannels.map(({ label, value, href, external }) => (
+          <ContactChannel
+            label={label}
+            href={href}
+            external={external}
+          >
+            {value}
+          </ContactChannel>
+        ))
+      }
+    </ContactChannels>
   </div>
 </section>

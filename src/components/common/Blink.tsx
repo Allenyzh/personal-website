@@ -1,6 +1,8 @@
+import type { CSSProperties } from "react";
+
 interface BlinkProps {
-  width?: number;
-  height?: number;
+  width?: CSSProperties["width"];
+  height?: CSSProperties["height"];
   className?: string;
 }
 

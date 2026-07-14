@@ -1,0 +1,49 @@
+---
+interface Props {
+  label: string;
+  href?: string;
+  external?: boolean;
+  showArrow?: boolean;
+  class?: string;
+}
+
+const {
+  label,
+  href,
+  external = false,
+  showArrow = true,
+  class: className,
+} = Astro.props;
+const Element = href ? "a" : "div";
+---
+
+<Element
+  href={href}
+  target={href && external ? "_blank" : undefined}
+  rel={href && external ? "noreferrer" : undefined}
+  class:list={[
+    "flex items-center justify-between border-b border-[#d9d8d3] py-[18px] font-mono text-sm",
+    href &&
+      "group transition-[padding] duration-150 hover:pl-3 focus-visible:pl-3 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#0a0a0a]",
+    className,
+  ]}
+>
+  <span class="text-[#6b6b66]">— {label}</span>
+  <span class="flex items-center gap-2.5 text-[#0a0a0a]">
+    <slot />
+    {
+      showArrow && (
+        <span
+          aria-hidden="true"
+          class:list={[
+            "text-[#6b6b66]",
+            href &&
+              "transition-transform duration-150 group-hover:translate-x-[3px] group-hover:text-[#0a0a0a] group-focus-visible:translate-x-[3px] group-focus-visible:text-[#0a0a0a]",
+          ]}
+        >
+          →
+        </span>
+      )
+    }
+  </span>
+</Element>
