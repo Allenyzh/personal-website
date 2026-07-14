@@ -52,11 +52,11 @@ export default function Hero({
   }, []);
 
   return (
-    <header className="border-b container border-[#d9d8d3] pt-14 pb-12 md:pt-24 md:pb-20">
+    <header className="border-b border-[#d9d8d3] pt-14 pb-12 md:pt-24 md:pb-20">
       <div className="container mx-auto grid grid-cols-1 gap-10 px-6 md:grid-cols-[1.3fr_1fr] md:items-center md:gap-16 md:px-10">
         <div>
-          <div className="mb-7 flex items-center gap-2.5 font-mono text-xs text-[#6b6b66] before:block before:h-px before:w-6 before:bg-[#6b6b66] before:content-['']">
-            hello_world.ts
+          <div className="mb-7 flex items-center gap-2.5 font-mono text-xs text-[#6b6b66]">
+            - hello_world.ts
             <Blink />
           </div>
 

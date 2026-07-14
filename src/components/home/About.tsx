@@ -43,7 +43,7 @@ export default function About() {
               >
                 WatsonBio
               </a>{" "}
-              u and the Insrfact SaaS modernization.
+              and the Insrfact SaaS modernization.
             </p>
           </div>
           <div className="flex flex-col border-t border-[#d9d8d3]">
