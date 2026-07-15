@@ -1,6 +1,13 @@
 import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
 
+const projectCategorySchema = z.enum([
+  "frontend",
+  "full-stack",
+  "open-source",
+  "ai-tools",
+]);
+
 const blog = defineCollection({
   // Load Markdown and MDX files in the `src/content/blog/` directory.
   loader: glob({ base: "./src/content/blog", pattern: "**/*.{md,mdx}" }),
@@ -38,6 +45,11 @@ const projects = defineCollection({
       featured: z.boolean().default(false),
       order: z.number().default(0),
       tech: z.array(z.string()).default([]),
+      projectCategories: z.array(projectCategorySchema).default([]),
+      metadata: z.object({
+        primary: z.string(),
+        secondary: z.string(),
+      }),
       github: z.string().optional(),
       live: z.string().optional(),
       githubDisable: z.boolean().default(false),

@@ -1,18 +1,12 @@
 ---
 export const prerender = true;
+
 import { getCollection } from "astro:content";
-import BaseLayout from "@/layouts/BaseLayout.astro";
-import FormattedDate from "../../components/FormattedDate.astro";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Clock } from "lucide-react";
 import readingTime from "reading-time";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import ShadowButton from "@/components/common/ShadowButton";
+import FeaturedCard from "@/components/common/FeaturedCard.astro";
+import FormattedDate from "@/components/FormattedDate.astro";
 
 const posts = (await getCollection("blog"))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
@@ -21,141 +15,176 @@ const posts = (await getCollection("blog"))
     readingTime: readingTime(post.body || "").text,
   }));
 
-// Find featured post
-const featuredPost = posts.find((post) => post.data.isFeatured);
+const featuredPost = posts.find((post) => post.data.isFeatured) ?? posts[0];
 ---
 
 <BaseLayout
-  bodyClass="bg-background"
-  title="My Blogs"
-  specialDescription="Thoughts, tutorials, and insights about web development, technology, and more."
+  bodyClass="bg-[#fafaf9] text-[#0a0a0a]"
+  title="Blog"
+  specialDescription="Notes on web development, CSS tricks, performance, and the craft of building things."
 >
-  <div class="container mx-auto px-4 py-8 max-w-6xl">
-    <!-- Header Section -->
-    <div class="text-center mb-12">
-      <h1 class="text-4xl font-bold tracking-tight text-foreground mb-4">
-        Blog
-      </h1>
-      <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
-        Thoughts, tutorials, and insights about web development, technology, and
-        more.
-      </p>
-    </div>
-
-    <!-- Featured Post -->
-    {
-      featuredPost && (
-        <div class="mb-12">
-          <h2 class="text-2xl font-semibold mb-6 text-foreground">
-            Featured Post
-          </h2>
-          <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
-            <a
-              href={`/blog/${featuredPost.data.slug || featuredPost.id}/`}
-              class="block"
-            >
-              <CardHeader className="pb-4">
-                <div class="flex items-center justify-between mb-2">
-                  <Badge variant="secondary">Featured</Badge>
-                  <div class="flex items-center gap-3 text-sm text-muted-foreground">
-                    <span>
-                      <FormattedDate date={featuredPost.data.pubDate} />
-                    </span>
-                    <div class="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      <span class="text-xs">{featuredPost.readingTime}</span>
-                    </div>
-                  </div>
-                </div>
-                <CardTitle className="text-2xl mb-2 hover:text-primary transition-colors">
-                  {featuredPost.data.title}
-                </CardTitle>
-                {featuredPost.data.description && (
-                  <CardDescription className="text-base">
-                    {featuredPost.data.description}
-                  </CardDescription>
-                )}
-              </CardHeader>
-              <CardContent className="pt-0">
-                {featuredPost.data.tech.map((tech) => {
-                  return (
-                    <Badge variant="secondary" className="text-xs mr-1 mb-1">
-                      {tech}
-                    </Badge>
-                  );
-                })}
-              </CardContent>
-            </a>
-          </Card>
+  <header class="border-b border-[#d9d8d3] py-12 md:py-[72px]">
+    <div
+      class="container mx-auto grid grid-cols-1 items-end gap-6 px-6 min-[901px]:grid-cols-[1fr_auto] md:px-10"
+    >
+      <div>
+        <div
+          class="mb-5 flex items-center gap-2.5 font-mono text-xs text-[#6b6b66]"
+        >
+          - cat ~/blogs · ls -la
         </div>
-      )
-    }
+        <h1
+          class="mb-4 text-[clamp(40px,5.5vw,72px)] font-bold leading-none tracking-[-0.035em]"
+        >
+          Blog.
+        </h1>
+        <p class="m-0 max-w-[600px] text-pretty text-[17px] text-[#3a3a38]">
+          Notes on web development, CSS tricks, performance, and the craft of
+          building things — written when I learn something worth sharing.
+        </p>
+      </div>
 
-    <!-- All Posts Grid -->
-    <div class="mb-8">
-      <h2 class="text-2xl font-semibold mb-6 text-foreground">All Posts</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {
-          posts.map((post) => (
-            <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
-              <a
-                href={`/blog/${post.data.slug || post.id}/`}
-                class="block h-full"
-              >
-                <CardHeader className="pb-2">
-                  <div class="flex items-center justify-between mb-3">
-                    <Badge variant="outline" className="text-xs">
-                      Article
-                    </Badge>
-                    <div class="flex items-center gap-2 text-xs text-muted-foreground">
-                      <span>
-                        <FormattedDate date={post.data.pubDate} />
-                      </span>
-                      <div class="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        <span>{post.readingTime}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <CardTitle className="text-lg leading-tight mb-2 hover:text-primary transition-colors line-clamp-2">
-                    {post.data.title}
-                  </CardTitle>
-                  {post.data.description && (
-                    <CardDescription className="text-sm line-clamp-3">
-                      {post.data.description}
-                    </CardDescription>
-                  )}
-                </CardHeader>
-                <CardContent className="pt-0">
-                  {post.data.tech.map((tech) => {
-                    return (
-                      <Badge variant="secondary" className="text-xs mr-1 mb-1">
-                        {tech}
-                      </Badge>
-                    );
-                  })}
-                </CardContent>
-              </a>
-            </Card>
-          ))
-        }
+      <div
+        class="flex flex-col gap-1 font-mono text-xs text-[#6b6b66] min-[901px]:text-right"
+      >
+        <div>
+          <b class="font-medium text-[#0a0a0a]"
+            >{String(posts.length).padStart(2, "0")}</b
+          > published
+        </div>
+        <div><b class="font-medium text-[#0a0a0a]">RSS</b> available</div>
       </div>
     </div>
+  </header>
 
-    <!-- Empty State -->
-    {
-      posts.length === 0 && (
-        <div class="text-center py-12">
-          <div class="mx-auto max-w-md">
-            <h3 class="text-lg font-semibold text-foreground mb-2">
-              No posts yet
-            </h3>
-            <p class="text-muted-foreground">
-              Check back later for new blog posts and articles.
-            </p>
+  <main class="py-12 pb-24">
+    <div class="container mx-auto px-6 md:px-10">
+      {
+        featuredPost && (
+          <FeaturedCard>
+            <Fragment slot="eyebrow">
+              FEATURED
+            </Fragment>
+
+            <Fragment slot="title">
+              <a
+                href={`/blog/${featuredPost.data.slug ?? featuredPost.id}`}
+                class="text-inherit after:absolute after:inset-0 after:content-[''] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0a0a0a]"
+              >
+                {featuredPost.data.title}
+              </a>
+            </Fragment>
+
+            <Fragment slot="description">
+              {featuredPost.data.description}
+            </Fragment>
+
+            <Fragment slot="meta">
+              <FormattedDate date={featuredPost.data.pubDate} />
+              <span class="h-[3px] w-[3px] rounded-full bg-[#6b6b66]" />
+              <span>{featuredPost.readingTime}</span>
+              <span class="h-[3px] w-[3px] rounded-full bg-[#6b6b66]" />
+              <span>{featuredPost.data.author}</span>
+            </Fragment>
+
+            <Fragment slot="tags">
+              {featuredPost.data.tech.map((tech) => (
+                <span class="rounded-sm bg-[#f0efec] px-2 py-0.5 font-mono text-[10px] text-[#3a3a38]">
+                  {tech}
+                </span>
+              ))}
+            </Fragment>
+
+            <Fragment slot="action">
+              read post
+              <span
+                aria-hidden="true"
+                class="transition-transform duration-150 group-hover:translate-x-1"
+              >
+                →
+              </span>
+            </Fragment>
+          </FeaturedCard>
+        )
+      }
+
+      <section class="pb-0">
+        <div
+          class="flex items-baseline justify-between gap-4 border-b border-[#1a1a1a] py-5"
+        >
+          <h2 class="m-0 text-2xl font-semibold tracking-[-0.015em]">
+            All Posts
+          </h2>
+          <div class="font-mono text-xs text-[#6b6b66]">
+            // {posts.length} published
           </div>
         </div>
-      )
-    }
-  </div>
+
+        {
+          posts.length > 0 ? (
+            <div class="flex flex-col">
+              {posts.map((post) => (
+                <a
+                  href={`/blog/${post.data.slug || post.id}`}
+                  class="relative grid grid-cols-1 items-baseline gap-2 border-b border-[#d9d8d3] px-2 py-6 transition-[background,padding] duration-150 hover:bg-[#f0efec] hover:px-5 focus-visible:bg-[#f0efec] focus-visible:px-5 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#0a0a0a] min-[901px]:grid-cols-[120px_minmax(0,1fr)_200px_80px] min-[901px]:gap-6"
+                >
+                  <time
+                    datetime={post.data.pubDate.toISOString()}
+                    class="font-mono text-xs text-[#6b6b66]"
+                  >
+                    <FormattedDate date={post.data.pubDate} />
+                  </time>
+
+                  <div>
+                    <h3 class="mb-1.5 mt-0 text-lg font-semibold tracking-[-0.01em]">
+                      {post.data.title}
+                    </h3>
+                    <p class="m-0 text-pretty text-sm text-[#3a3a38]">
+                      {post.data.description}
+                    </p>
+                  </div>
+
+                  <div class="flex flex-wrap gap-1 font-mono text-[11px] text-[#6b6b66]">
+                    {post.data.tech.map((tech) => (
+                      <span>#{tech}</span>
+                    ))}
+                  </div>
+
+                  <div class="font-mono text-xs text-[#6b6b66] min-[901px]:text-right">
+                    {post.readingTime.replace(" read", "")}
+                  </div>
+                </a>
+              ))}
+            </div>
+          ) : (
+            <div class="border-b border-[#d9d8d3] px-2 py-12 text-center font-mono text-sm text-[#6b6b66]">
+              No posts yet.
+            </div>
+          )
+        }
+      </section>
+
+      <section
+        class="relative mt-16 grid grid-cols-1 items-center gap-8 border border-[#1a1a1a] bg-[#fafaf9] px-6 py-8 min-[901px]:grid-cols-[1fr_auto] md:p-12"
+      >
+        <span
+          class="absolute -top-2.5 left-6 bg-[#fafaf9] px-3 font-mono text-[11px] text-[#6b6b66]"
+        >
+          $ subscribe --rss
+        </span>
+        <div>
+          <h2 class="mb-1.5 mt-0 text-[22px] font-semibold tracking-[-0.015em]">
+            Subscribe via RSS
+          </h2>
+          <p class="m-0 max-w-[520px] text-pretty text-sm text-[#3a3a38]">
+            I write rarely but try to make it count. Add the feed to your reader
+            and new posts will show up as soon as they are published.
+          </p>
+        </div>
+        <ShadowButton href="/rss.xml" variant="primary">
+          open RSS feed →
+        </ShadowButton>
+      </section>
+    </div>
+  </main>
 </BaseLayout>

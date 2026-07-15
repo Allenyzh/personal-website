@@ -13,7 +13,7 @@ export default function ShadowButton({
 }: ShadowButtonProps) {
   const variantClasses =
     variant === "primary"
-      ? "border-[#1a1a1a] bg-[#0a0a0a] text-[#fafaf9] hover:shadow-[3px_3px_0_#71797E]"
+      ? "border-[#1a1a1a] bg-[#0a0a0a] text-[#fafaf9] hover:shadow-[3px_3px_0_#42b883]"
       : "border-[#0a0a0a] bg-[#fafaf9] text-[#0a0a0a] hover:shadow-[3px_3px_0_#0a0a0a]";
 
   return (

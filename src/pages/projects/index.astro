@@ -1,181 +1,388 @@
 ---
 export const prerender = true;
+
 import { getCollection } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import FormattedDate from "../../components/FormattedDate.astro";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Clock } from "lucide-react";
-import readingTime from "reading-time";
+import ShadowButton from "@/components/common/ShadowButton";
+import FeaturedCard from "@/components/common/FeaturedCard.astro";
+import FormattedDate from "@/components/FormattedDate.astro";
 
-const projects = (await getCollection("projects"))
-  .sort(
-    (a, b) =>
-      b.data.pubDate.valueOf() - a.data.pubDate.valueOf() ||
-      b.data.order - a.data.order
-  )
-  .map((project) => ({
-    ...project,
-    readingTime: readingTime(project.body || "").text,
-  }));
+const projects = (await getCollection("projects")).sort(
+  (a, b) =>
+    Number(b.data.featured) - Number(a.data.featured) ||
+    a.data.order - b.data.order,
+);
 
-// Find featured project (first project with showOnHomePage)
-const featuredProject = projects.find((project) => project.data.featured);
+const getProjectDetails = (project: (typeof projects)[number]) => {
+  const slug = project.data.slug ?? project.id;
+  const hasLive = Boolean(project.data.live && !project.data.liveDisable);
+  const hasSource = Boolean(
+    project.data.github && !project.data.githubDisable,
+  );
+  const status = hasLive
+    ? "live"
+    : hasSource
+      ? slug === "inputdatemask"
+        ? "npm package"
+        : "open-source"
+      : "internal";
+
+  return { slug, hasLive, hasSource, status };
+};
+
+const featuredProject =
+  projects.find((project) => project.data.featured) ?? projects[0];
+const featuredDetails = featuredProject
+  ? getProjectDetails(featuredProject)
+  : undefined;
+
+const projectFilterValues = [
+  ...new Set(
+    projects.flatMap((project) => project.data.projectCategories),
+  ),
+];
+const filters = [
+  { label: "all", value: "all" },
+  ...projectFilterValues.map((value) => ({
+    label: value === "ai-tools" ? "ai / tools" : value,
+    value,
+  })),
+];
+
+const years = projects.map((project) => project.data.pubDate.getFullYear());
+const yearRange = years.length
+  ? `${Math.min(...years)}—${Math.max(...years)}`
+  : "—";
 ---
 
 <BaseLayout
-  bodyClass="bg-background"
-  title="My Projects"
-  specialDescription="A showcase of my work, including web applications, open-source projects, and technical experiments."
+  bodyClass="bg-[#fafaf9] text-[#0a0a0a]"
+  title="Projects"
+  specialDescription="A selection of things I've built — open-source components, client work, hackathons, and side projects."
 >
-  <div class="container mx-auto px-4 py-8 max-w-6xl">
-    <!-- Header Section -->
-    <div class="text-center mb-12">
-      <h1 class="text-4xl font-bold tracking-tight text-foreground mb-4">
-        Projects
-      </h1>
-      <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
-        A showcase of my work, including web applications, open-source projects,
-        and technical experiments.
-      </p>
-    </div>
-
-    <!-- Featured Project -->
-    {
-      featuredProject && (
-        <div class="mb-12">
-          <h2 class="text-2xl font-semibold mb-6 text-foreground">
-            Featured Project
-          </h2>
-          <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
-            <a
-              href={`/projects/${
-                featuredProject.data.slug ||
-                featuredProject.data.title
-                  .toLowerCase()
-                  .replace(/[^a-z0-9]+/g, "-")
-                  .replace(/^-+|-+$/g, "")
-              }/`}
-              class="block"
-            >
-              <CardHeader className="pb-4">
-                <div class="flex items-center justify-between mb-2">
-                  <Badge variant="secondary">Featured</Badge>
-                  <div class="flex items-center gap-3 text-sm text-muted-foreground">
-                    <span>
-                      <FormattedDate date={featuredProject.data.pubDate} />
-                    </span>
-                    <div class="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      <span class="text-xs">{featuredProject.readingTime}</span>
-                    </div>
-                  </div>
-                </div>
-                <CardTitle className="text-2xl mb-2 hover:text-primary transition-colors">
-                  {featuredProject.data.title}
-                </CardTitle>
-                {featuredProject.data.description && (
-                  <CardDescription className="text-base">
-                    {featuredProject.data.description}
-                  </CardDescription>
-                )}
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div class="flex flex-wrap gap-1 mb-4">
-                  {featuredProject.data.tech.map((tech) => {
-                    return (
-                      <Badge variant="secondary" className="text-xs">
-                        {tech}
-                      </Badge>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </a>
-          </Card>
+  <header class="border-b border-[#d9d8d3] py-12 md:py-[72px]">
+    <div
+      class="container mx-auto grid grid-cols-1 items-end gap-6 px-6 min-[901px]:grid-cols-[1fr_auto] md:px-10"
+    >
+      <div>
+        <div
+          class="mb-5 flex items-center gap-2.5 font-mono text-xs text-[#6b6b66]"
+        >
+          - cd ~/projects · ls -la
         </div>
-      )
-    }
+        <h1
+          class="mb-4 text-[clamp(40px,5.5vw,72px)] font-bold leading-none tracking-[-0.035em]"
+        >
+          Projects.
+        </h1>
+        <p class="m-0 max-w-[600px] text-pretty text-[17px] text-[#3a3a38]">
+          A selection of things I've built — open-source components, client
+          work, hackathons, and side projects. Most ship to production.
+        </p>
+      </div>
 
-    <!-- All Projects Grid -->
-    <div class="mb-8">
-      <h2 class="text-2xl font-semibold mb-6 text-foreground">All Projects</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {
-          projects.map((project) => (
-            <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
-              <a
-                href={`/projects/${
-                  project.data.slug ||
-                  project.data.title
-                    .toLowerCase()
-                    .replace(/[^a-z0-9]+/g, "-")
-                    .replace(/^-+|-+$/g, "")
-                }/`}
-                class="block h-full"
-              >
-                <CardHeader className="pb-2">
-                  <div class="flex items-center justify-between mb-3">
-                    <Badge variant="outline" className="text-xs">
-                      Project
-                    </Badge>
-                    <div class="flex items-center gap-2 text-xs text-muted-foreground">
-                      <span>
-                        <FormattedDate date={project.data.pubDate} />
-                      </span>
-                      <div class="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        <span>{project.readingTime}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <CardTitle className="text-lg leading-tight mb-2 hover:text-primary transition-colors line-clamp-2">
-                    {project.data.title}
-                  </CardTitle>
-                  {project.data.description && (
-                    <CardDescription className="text-sm line-clamp-3">
-                      {project.data.description}
-                    </CardDescription>
-                  )}
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div class="flex flex-wrap gap-1 mb-3">
-                    {project.data.tech.map((tech) => {
-                      return (
-                        <Badge variant="secondary" className="text-xs">
-                          {tech}
-                        </Badge>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </a>
-            </Card>
-          ))
-        }
+      <div
+        class="flex flex-col gap-1 font-mono text-xs text-[#6b6b66] min-[901px]:text-right"
+      >
+        <div>
+          <b class="font-medium text-[#0a0a0a]"
+            >{String(projects.length).padStart(2, "0")}</b
+          > projects
+        </div>
+        <div>
+          <b class="font-medium text-[#0a0a0a]"
+            >{String(filters.length - 1).padStart(2, "0")}</b
+          > domains
+        </div>
+        <div><b class="font-medium text-[#0a0a0a]">{yearRange}</b></div>
       </div>
     </div>
+  </header>
 
-    <!-- Empty State -->
-    {
-      projects.length === 0 && (
-        <div class="text-center py-12">
-          <div class="mx-auto max-w-md">
-            <h3 class="text-lg font-semibold text-foreground mb-2">
-              No projects yet
-            </h3>
-            <p class="text-muted-foreground">
-              Check back later for new projects and developments.
-            </p>
+  <main class="py-12 pb-24">
+    <div class="container mx-auto px-6 md:px-10">
+      {
+        featuredProject && featuredDetails && (
+          <FeaturedCard>
+            <Fragment slot="eyebrow">FEATURED PROJECT</Fragment>
+
+            <Fragment slot="title">
+              <a
+                href={`/projects/${featuredDetails.slug}`}
+                class="text-inherit after:absolute after:inset-0 after:content-[''] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0a0a0a]"
+              >
+                {featuredProject.data.title}
+              </a>
+            </Fragment>
+
+            <Fragment slot="description">
+              {featuredProject.data.description}
+            </Fragment>
+
+            <Fragment slot="meta">
+              <FormattedDate date={featuredProject.data.pubDate} />
+              <span class="h-[3px] w-[3px] rounded-full bg-[#6b6b66]" />
+              <span class="capitalize">{featuredProject.data.author}</span>
+            </Fragment>
+
+            <Fragment slot="tags">
+              {featuredProject.data.tech.map((tech) => (
+                <span class="rounded-sm bg-[#f0efec] px-1.5 py-0.5 font-mono text-[10px] text-[#3a3a38]">
+                  {tech}
+                </span>
+              ))}
+            </Fragment>
+
+            <Fragment slot="action">
+              view project
+              <span
+                aria-hidden="true"
+                class="transition-transform duration-150 group-hover:translate-x-1"
+              >
+                →
+              </span>
+            </Fragment>
+
+            <Fragment slot="aside">
+              <div class="flex items-start justify-between gap-4 font-mono text-[11px] text-[#6b6b66]">
+                <span>// project profile</span>
+                <div class="flex flex-col gap-0.5 text-right">
+                  <span>{featuredProject.data.metadata.primary}</span>
+                  <span>{featuredProject.data.metadata.secondary}</span>
+                </div>
+              </div>
+
+              <div class="border-t border-dashed border-[#d9d8d3] pt-4">
+                <div class="mb-3 font-mono text-[11px] text-[#6b6b66]">
+                  // domains
+                </div>
+                <div class="flex flex-wrap gap-1.5">
+                  {featuredProject.data.projectCategories.map((category) => (
+                    <span class="rounded-sm border border-[#d9d8d3] bg-[#fafaf9] px-2 py-1 font-mono text-[10px] text-[#3a3a38]">
+                      #{category}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div class="relative z-10 mt-auto flex flex-wrap items-center gap-2 border-t border-dashed border-[#d9d8d3] pt-4 font-mono text-[11px] text-[#6b6b66]">
+                {featuredDetails.hasLive && featuredProject.data.live && (
+                  <ShadowButton
+                    href={featuredProject.data.live}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="shrink-0 !px-2.5 !py-1 !text-[11px]"
+                    variant="primary"
+                  >
+                    ↗ live demo
+                  </ShadowButton>
+                )}
+                {featuredDetails.hasSource && featuredProject.data.github && (
+                  <ShadowButton
+                    href={featuredProject.data.github}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="shrink-0 !px-2.5 !py-1 !text-[11px]"
+                  >
+                    ↗ source
+                  </ShadowButton>
+                )}
+                <span
+                  class:list={[
+                    "ml-auto inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.06em]",
+                    featuredDetails.hasLive
+                      ? "text-[oklch(0.45_0.12_150)]"
+                      : "text-[#6b6b66]",
+                  ]}
+                >
+                  <span
+                    class:list={[
+                      "h-1.5 w-1.5 rounded-full",
+                      featuredDetails.hasLive
+                        ? "bg-[oklch(0.62_0.14_150)] shadow-[0_0_0_3px_oklch(0.62_0.14_150_/_0.12)]"
+                        : "bg-[#6b6b66]",
+                    ]}
+                  />
+                  {featuredDetails.status}
+                </span>
+              </div>
+            </Fragment>
+          </FeaturedCard>
+        )
+      }
+
+      <div
+        class="mb-6 flex flex-wrap items-center gap-2 border-b border-[#d9d8d3] py-4 font-mono text-xs"
+      >
+        <span class="mr-2 text-[#6b6b66]">// filter:</span>
+        {
+          filters.map((filter, index) => (
+            <button
+              type="button"
+              data-project-filter={filter.value}
+              aria-pressed={index === 0 ? "true" : "false"}
+              class="rounded-sm border border-[#d9d8d3] bg-transparent px-2.5 py-[5px] font-mono text-[11px] text-[#3a3a38] transition-colors hover:border-[#1a1a1a] hover:text-[#0a0a0a] aria-pressed:border-[#1a1a1a] aria-pressed:bg-[#0a0a0a] aria-pressed:text-[#fafaf9]"
+            >
+              {filter.label}
+            </button>
+          ))
+        }
+        <span
+          id="project-filter-count"
+          aria-live="polite"
+          class="ml-auto text-[#6b6b66]"
+        >
+          {projects.length} projects
+        </span>
+      </div>
+
+      {
+        projects.length > 0 ? (
+          <div
+            id="project-cards"
+            class="grid grid-cols-1 gap-px border border-[#d9d8d3] bg-[#d9d8d3] min-[901px]:grid-cols-2"
+          >
+            {projects.map((project, index) => {
+              const { slug, hasLive, hasSource, status } =
+                getProjectDetails(project);
+              const categories = project.data.projectCategories;
+              const { primary: metaPrimary, secondary: metaSecondary } =
+                project.data.metadata;
+
+              return (
+                <article
+                  data-project-card
+                  data-project-categories={categories.join(" ")}
+                  class="group relative flex min-h-[280px] flex-col gap-4 bg-[#fafaf9] px-5 py-6 transition-colors duration-200 hover:bg-[#f0efec] md:px-7 md:pb-6 md:pt-7"
+                >
+                  <div class="flex items-start justify-between gap-3">
+                    <div class="font-mono text-[11px] text-[#6b6b66]">
+                      /{String(index + 1).padStart(3, "0")} · <FormattedDate date={project.data.pubDate} />
+                    </div>
+                    <div class="flex flex-col gap-0.5 text-right font-mono text-[11px] text-[#6b6b66]">
+                      <span>{metaPrimary}</span>
+                      <span>{metaSecondary}</span>
+                    </div>
+                  </div>
+
+                  <h2 class="m-0 text-[22px] font-semibold leading-[1.2] tracking-[-0.02em]">
+                    <a
+                      href={`/projects/${slug}`}
+                      class="after:absolute after:inset-0 after:content-[''] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0a0a0a]"
+                    >
+                      {project.data.title}
+                    </a>
+                  </h2>
+
+                  <p class="m-0 flex-1 text-pretty text-sm text-[#3a3a38]">
+                    {project.data.description}
+                  </p>
+
+                  <div class="flex flex-wrap gap-1">
+                    {project.data.tech.map((tech) => (
+                      <span class="rounded-sm bg-[#f0efec] px-1.5 py-0.5 font-mono text-[10px] text-[#3a3a38] transition-colors group-hover:bg-[#fafaf9]">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div class="relative z-10 mt-1 flex items-center gap-2 border-t border-dashed border-[#d9d8d3] pt-3.5 font-mono text-[11px] text-[#6b6b66]">
+                    {hasLive && (
+                      <ShadowButton
+                        href={project.data.live}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="shrink-0 !px-2.5 !py-1 !text-[11px]"
+                        variant="primary"
+                      >
+                        ↗ live demo
+                      </ShadowButton>
+                    )}
+                    {hasSource && (
+                      <ShadowButton
+                        href={project.data.github}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="shrink-0 !px-2.5 !py-1 !text-[11px]"
+                      >
+                        ↗ source
+                      </ShadowButton>
+                    )}
+                    <span
+                      class:list={[
+                        "ml-auto inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.06em]",
+                        hasLive
+                          ? "text-[oklch(0.45_0.12_150)]"
+                          : "text-[#6b6b66]",
+                      ]}
+                    >
+                      <span
+                        class:list={[
+                          "h-1.5 w-1.5 rounded-full",
+                          hasLive
+                            ? "bg-[oklch(0.62_0.14_150)] shadow-[0_0_0_3px_oklch(0.62_0.14_150_/_0.12)]"
+                            : "bg-[#6b6b66]",
+                        ]}
+                      />
+                      {status}
+                    </span>
+                  </div>
+                </article>
+              );
+            })}
           </div>
-        </div>
-      )
-    }
-  </div>
+        ) : (
+          <div class="border border-[#d9d8d3] px-6 py-12 text-center font-mono text-sm text-[#6b6b66]">
+            No projects yet.
+          </div>
+        )
+      }
+
+      <div class="mt-8 flex justify-end">
+        <ShadowButton
+          href="https://github.com/Allenyzh"
+          target="_blank"
+          rel="noreferrer"
+        >
+          view all on github →
+        </ShadowButton>
+      </div>
+    </div>
+  </main>
 </BaseLayout>
+
+<script>
+  const filterButtons = document.querySelectorAll<HTMLButtonElement>(
+    "[data-project-filter]",
+  );
+  const projectCards = document.querySelectorAll<HTMLElement>(
+    "[data-project-card]",
+  );
+  const filterCount = document.querySelector<HTMLElement>(
+    "#project-filter-count",
+  );
+
+  filterButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const filter = button.dataset.projectFilter || "all";
+      let visibleCount = 0;
+
+      filterButtons.forEach((item) => {
+        item.setAttribute("aria-pressed", String(item === button));
+      });
+
+      projectCards.forEach((card) => {
+        const categories = card.dataset.projectCategories?.split(" ") ?? [];
+        const isVisible = filter === "all" || categories.includes(filter);
+        card.hidden = !isVisible;
+        if (isVisible) visibleCount += 1;
+      });
+
+      if (filterCount) {
+        filterCount.textContent = `${visibleCount} ${
+          visibleCount === 1 ? "project" : "projects"
+        }`;
+      }
+    });
+  });
+</script>

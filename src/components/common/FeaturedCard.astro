@@ -1,0 +1,56 @@
+---
+export interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+const hasAside = Astro.slots.has("aside");
+---
+
+<article
+  class:list={[
+    "group relative mb-16 grid overflow-hidden border border-[#1a1a1a] bg-[#fafaf9] text-inherit transition-[transform,box-shadow] duration-150 hover:-translate-x-[3px] hover:-translate-y-[3px] hover:shadow-[6px_6px_0_#0a0a0a]",
+    hasAside && "min-[901px]:grid-cols-[1.4fr_1fr]",
+    className,
+  ]}
+>
+  <div class="flex flex-col gap-3.5 px-6 py-7 md:px-9 md:pb-8 md:pt-9">
+    <div
+      class="flex items-center gap-2.5 font-mono text-[11px] text-[oklch(0.62_0.14_150)]"
+    >
+      <slot name="eyebrow" />
+    </div>
+
+    <h2
+      class="my-1 text-[clamp(28px,3.4vw,40px)] font-bold leading-[1.05] tracking-[-0.025em] text-pretty"
+    >
+      <slot name="title" />
+    </h2>
+
+    <p class="m-0 text-pretty text-base leading-[1.55] text-[#3a3a38]">
+      <slot name="description" />
+    </p>
+
+    <div
+      class="flex flex-wrap items-center gap-4 pt-2 font-mono text-[11px] text-[#6b6b66]"
+    >
+      <slot name="meta" />
+    </div>
+
+    <div class="mt-auto flex flex-wrap gap-1">
+      <slot name="tags" />
+    </div>
+
+    <div class="mt-2 inline-flex items-center gap-1.5 font-mono text-[13px]">
+      <slot name="action" />
+    </div>
+  </div>
+
+  {
+    hasAside && (
+      <aside class="flex flex-col gap-5 border-t border-[#1a1a1a] bg-[#f0efec] px-6 py-7 min-[901px]:border-l min-[901px]:border-t-0 md:px-9 md:pb-8 md:pt-9">
+        <slot name="aside" />
+      </aside>
+    )
+  }
+</article>
