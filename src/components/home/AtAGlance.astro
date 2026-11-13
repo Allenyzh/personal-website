@@ -1,0 +1,92 @@
+---
+import { ArrowUpRight } from "@lucide/astro";
+import BentoCell from "@/components/common/BentoCell.astro";
+import Chip from "@/components/common/Chip.astro";
+import Section from "@/components/common/Section.astro";
+import SectionHead from "@/components/common/SectionHead.astro";
+import {
+  MY_ABOUT,
+  MY_AI_TOOLKIT,
+  MY_BACKGROUND,
+  MY_GITHUB,
+  MY_TIMEZONE,
+} from "@/data/consts";
+import { getCurrentExperience } from "@/lib/content";
+import { formatYearMonth } from "@/lib/date";
+
+const current = await getCurrentExperience();
+const githubHandle = `@${new URL(MY_GITHUB).pathname.replace(/\//g, "")}`;
+const fact = "text-h3 text-foreground";
+const note = "text-meta font-mono text-muted-foreground";
+---
+
+<Section id="about" labelledby="about-title">
+  <SectionHead index="01" marker="at-a-glance" title="At a glance" id="about-title" />
+
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-6">
+    <BentoCell label="about" class="sm:col-span-2 lg:col-span-4 lg:row-span-2">
+      <div class="flex max-w-2xl flex-col gap-4 text-lg text-pretty text-foreground-soft">
+        {MY_ABOUT.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
+    </BentoCell>
+
+    {
+      current && (
+        <BentoCell label="now" class="lg:col-span-2">
+          <p class={fact}>{current.data.company}</p>
+          <p class={note}>since {formatYearMonth(current.data.start)}</p>
+        </BentoCell>
+      )
+    }
+
+    {
+      current?.data.location && (
+        <BentoCell label="based in" class="lg:col-span-2">
+          <p class={fact}>{current.data.location}</p>
+          <p class={note}>{MY_TIMEZONE}</p>
+        </BentoCell>
+      )
+    }
+
+    <BentoCell label="background" class="lg:col-span-2">
+      <p class={fact}>
+        {MY_BACKGROUND.from}
+        <span class="text-brand-ink" aria-hidden="true">→</span>
+        <span class="sr-only">to</span>
+        {MY_BACKGROUND.to}
+      </p>
+      <p class={note}>{MY_BACKGROUND.note}</p>
+    </BentoCell>
+
+    <BentoCell label="building with AI" class="lg:col-span-2">
+      <ul class="flex flex-wrap gap-1.5">
+        {
+          MY_AI_TOOLKIT.items.map((item) => (
+            <li>
+              <Chip tone="brand">{item}</Chip>
+            </li>
+          ))
+        }
+      </ul>
+      <p class={note}>{MY_AI_TOOLKIT.note}</p>
+    </BentoCell>
+
+    <BentoCell label="open source" class="sm:col-span-2 lg:col-span-2">
+      <p class={fact}>
+        <a
+          href={MY_GITHUB}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group inline-flex items-center gap-1 underline-offset-4 hover:underline"
+        >
+          {githubHandle}
+          <ArrowUpRight
+            class="size-4 text-muted-foreground transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-brand-ink"
+            aria-hidden="true"
+          />
+        </a>
+      </p>
+      <p class={note}>code on GitHub</p>
+    </BentoCell>
+  </div>
+</Section>

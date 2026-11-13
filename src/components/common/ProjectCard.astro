@@ -1,0 +1,147 @@
+---
+import { ArrowUpRight, ExternalLink } from "@lucide/astro";
+import Chip from "@/components/common/Chip.astro";
+import ProjectCover from "@/components/common/ProjectCover.astro";
+import { Github } from "@/components/common/Github";
+import { isAiProject, projectSlug, type Project } from "@/lib/content";
+
+interface Props {
+  project: Project;
+  /** Wide two-column variant for the featured slot. */
+  featured?: boolean;
+  /** Heading level of the title; depends on the section the card sits in. */
+  headingLevel?: "h3" | "h4";
+  /** Makes ids unique when the same project appears twice on a page. */
+  idPrefix?: string;
+}
+
+const {
+  project,
+  featured = false,
+  headingLevel: Heading = "h3",
+  idPrefix = "project",
+} = Astro.props;
+const { title, description, tech, outcome, github, githubDisable, live } =
+  project.data;
+const { liveDisable } = project.data;
+
+const slug = projectSlug(project);
+const titleId = `${idPrefix}-${slug}`;
+const showCode = !githubDisable && Boolean(github);
+const showLive = !liveDisable && Boolean(live);
+const iconLink =
+  "relative z-10 inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground";
+---
+
+<article
+  class:list={[
+    "surface group relative flex w-full min-w-0 flex-col overflow-hidden transition-colors duration-150 hover:border-border-strong",
+    featured && "md:grid md:grid-cols-2 md:items-stretch",
+  ]}
+>
+  <div class:list={["p-3 pb-0", featured && "md:order-2 md:p-4 md:pl-0"]}>
+    <ProjectCover
+      project={project}
+      eager={featured}
+      sizes={featured
+        ? "(min-width: 768px) 540px, 100vw"
+        : "(min-width: 768px) 520px, 100vw"}
+    />
+  </div>
+
+  <div
+    class:list={[
+      "flex flex-1 flex-col gap-3 p-5",
+      featured && "md:justify-center md:p-8",
+    ]}
+  >
+    <div class="flex items-start justify-between gap-3">
+      <Heading
+        id={titleId}
+        class:list={[
+          "flex items-center gap-1.5",
+          featured ? "text-h2" : "text-h3",
+        ]}
+      >
+        <a
+          href={`/projects/${slug}/`}
+          class="outline-none after:absolute after:inset-0 after:rounded-[inherit] focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-ring"
+        >
+          {title}
+        </a>
+        <ArrowUpRight
+          class="size-4 flex-none text-muted-foreground transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-brand-ink"
+          aria-hidden="true"
+        />
+      </Heading>
+
+      {
+        (showCode || showLive) && (
+          <div class="-mt-1 -mr-1.5 flex flex-none items-center">
+            {showCode && (
+              <a
+                href={github}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Source code"
+                aria-describedby={titleId}
+                class={iconLink}
+              >
+                <Github className="size-4" />
+              </a>
+            )}
+            {showLive && (
+              <a
+                href={live}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Live site"
+                aria-describedby={titleId}
+                class={iconLink}
+              >
+                <ExternalLink class="size-4" aria-hidden="true" />
+              </a>
+            )}
+          </div>
+        )
+      }
+    </div>
+
+    {
+      outcome && (
+        <p class="text-meta font-mono font-medium text-brand-ink tabular-nums">
+          {outcome}
+        </p>
+      )
+    }
+
+    <p
+      class:list={[
+        "text-pretty text-muted-foreground",
+        featured ? "text-base" : "line-clamp-3 text-sm",
+      ]}
+    >
+      {description}
+    </p>
+
+    <ul
+      class:list={["flex flex-wrap gap-1.5 pt-2", !featured && "mt-auto"]}
+      aria-label="Tech stack"
+    >
+      {
+        isAiProject(project) && (
+          <li>
+            <Chip tone="brand">AI</Chip>
+          </li>
+        )
+      }
+      {
+        tech.map((item) => (
+          <li>
+            <Chip>{item}</Chip>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</article>

@@ -1,80 +1,55 @@
 ---
 export const prerender = true;
-import { type CollectionEntry, getCollection, render } from "astro:content";
+import { render } from "astro:content";
 import ArticleLayout from "@/layouts/ArticleLayout.astro";
+import {
+  getNeighbours,
+  getSortedProjects,
+  projectSlug,
+  type Project,
+} from "@/lib/content";
 import readingTime from "reading-time";
 
 export async function getStaticPaths() {
-  const projects = await getCollection("projects");
+  // Same order as the listing page, so prev/next walks the list the visitor saw.
+  const projects = await getSortedProjects();
   return projects.map((project, index) => {
-    const slug =
-      project.data.slug ||
-      project.data.title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "");
-
-    // 计算上一个和下一个项目的索引（循环）
-    const prevIndex = index === 0 ? projects.length - 1 : index - 1;
-    const nextIndex = index === projects.length - 1 ? 0 : index + 1;
-
-    const prevProject = projects[prevIndex];
-    const nextProject = projects[nextIndex];
-
-    const prevSlug =
-      prevProject.data.slug ||
-      prevProject.data.title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "");
-
-    const nextSlug =
-      nextProject.data.slug ||
-      nextProject.data.title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "");
-
+    const around = getNeighbours(projects, index);
     return {
-      params: {
-        slug: slug,
-      },
+      params: { slug: projectSlug(project) },
       props: {
         project,
-        prevProject: {
-          title: prevProject.data.title,
-          slug: prevSlug,
-        },
-        nextProject: {
-          title: nextProject.data.title,
-          slug: nextSlug,
+        neighbours: around && {
+          prev: { title: around.prev.data.title, slug: projectSlug(around.prev) },
+          next: { title: around.next.data.title, slug: projectSlug(around.next) },
         },
       },
     };
   });
 }
 
+type Neighbour = { title: string; slug: string };
 type Props = {
-  project: CollectionEntry<"projects">;
-  prevProject: { title: string; slug: string };
-  nextProject: { title: string; slug: string };
+  project: Project;
+  neighbours?: { prev: Neighbour; next: Neighbour };
 };
 
-const { project, prevProject, nextProject } = Astro.props;
-const { Content } = await render(project);
-const readingTimeResult = readingTime(project.body || "");
+const { project, neighbours } = Astro.props;
+const { Content, headings } = await render(project);
 ---
 
 <ArticleLayout
   title={project.data.title}
   description={project.data.description}
   pubDate={project.data.pubDate}
+  dateStyle="month"
   author={project.data.author}
   tech={project.data.tech}
-  prevItem={prevProject}
-  nextItem={nextProject}
+  neighbours={neighbours}
   collectionType="projects"
-  readingTime={readingTimeResult.text}
+  readingTime={readingTime(project.body || "").text}
+  headings={headings}
+  markdownHref={`/projects/${projectSlug(project)}.md`}
 >
   <Content />
 </ArticleLayout>

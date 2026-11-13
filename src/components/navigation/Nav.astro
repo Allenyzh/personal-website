@@ -1,0 +1,172 @@
+---
+import { Menu, Moon, Search, Sun, X } from "@lucide/astro";
+import Kbd from "@/components/common/Kbd.astro";
+import { MY_NAME, SITE_TITLE } from "@/data/consts";
+import { navItems } from "@/data/navItems";
+
+const { pathname } = Astro.url;
+const current = pathname.replace(/\/$/, "") || "/";
+const isActive = (path: string) =>
+  path === "/"
+    ? current === "/"
+    : current === path || current.startsWith(`${path}/`);
+
+const items = [...navItems].sort((a, b) => a.order - b.order);
+const brand = MY_NAME.toLowerCase().replace(/\s+/g, ".");
+const iconButton =
+  "inline-flex h-9 items-center justify-center gap-1.5 rounded-full px-2.5 text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground";
+---
+
+<header class="wrap sticky top-3 z-40 mt-3" data-site-header>
+  <div
+    class="flex h-12 items-center gap-1 rounded-full border border-border bg-popover/85 pr-1.5 pl-4 backdrop-blur-md"
+  >
+    <a
+      href="/"
+      aria-label={SITE_TITLE}
+      class="mr-auto flex items-center gap-2.5 rounded-full font-mono text-sm font-medium text-foreground"
+    >
+      <span class="size-2.5 rounded-[3px] bg-brand" aria-hidden="true"></span>
+      {brand}
+    </a>
+
+    <nav aria-label="Main" class="hidden items-center md:flex">
+      {
+        items.map((item) => (
+          <a
+            href={item.path}
+            aria-current={isActive(item.path) ? "page" : undefined}
+            class="nav-link relative rounded-full px-3 py-1.5 text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground aria-[current=page]:text-foreground"
+          >
+            {item.name}
+          </a>
+        ))
+      }
+    </nav>
+
+    <span class="mx-1 hidden h-5 w-px bg-border md:block" aria-hidden="true"
+    ></span>
+
+    <button
+      type="button"
+      data-palette-open
+      aria-label="Open command palette"
+      aria-keyshortcuts="Meta+K Control+K"
+      class={iconButton}
+    >
+      <Search class="size-4" aria-hidden="true" />
+      <span class="hidden sm:inline-flex"><Kbd data-kbd-mod>⌘K</Kbd></span>
+    </button>
+
+    <button
+      type="button"
+      data-theme-toggle
+      aria-label="Toggle colour theme"
+      class:list={[iconButton, "w-9 px-0"]}
+    >
+      <Sun class="hidden size-4 dark:block" aria-hidden="true" />
+      <Moon class="size-4 dark:hidden" aria-hidden="true" />
+    </button>
+
+    <button
+      type="button"
+      data-menu-toggle
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      class:list={[iconButton, "group w-9 px-0 md:hidden"]}
+    >
+      <Menu class="size-4 group-aria-expanded:hidden" aria-hidden="true" />
+      <X class="hidden size-4 group-aria-expanded:block" aria-hidden="true" />
+    </button>
+  </div>
+
+  <nav
+    id="mobile-menu"
+    aria-label="Mobile"
+    hidden
+    class="absolute inset-x-(--gutter) top-full mt-2 rounded-xl border border-border bg-popover p-2 md:hidden"
+  >
+    {
+      items.map((item) => (
+        <a
+          href={item.path}
+          aria-current={isActive(item.path) ? "page" : undefined}
+          class="flex items-center justify-between rounded-lg px-3 py-3 text-base text-foreground-soft transition-colors duration-150 hover:bg-muted aria-[current=page]:text-foreground"
+        >
+          {item.name}
+          {isActive(item.path) && (
+            <span class="size-1.5 rounded-full bg-brand" aria-hidden="true" />
+          )}
+        </a>
+      ))
+    }
+  </nav>
+</header>
+
+<style>
+  .nav-link[aria-current="page"]::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    margin-left: -2px;
+    border-radius: 9999px;
+    background: var(--brand);
+  }
+</style>
+
+<script>
+  import { toggleTheme } from "@/lib/theme";
+
+  document
+    .querySelector("[data-theme-toggle]")
+    ?.addEventListener("click", () => toggleTheme());
+
+  const toggle = document.querySelector<HTMLButtonElement>(
+    "[data-menu-toggle]",
+  );
+  const menu = document.querySelector<HTMLElement>("#mobile-menu");
+
+  if (toggle && menu) {
+    const setOpen = (open: boolean, returnFocus = false) => {
+      menu.hidden = !open;
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      // global.css locks page scroll while this attribute is present.
+      document.documentElement.toggleAttribute("data-menu-open", open);
+      if (open) menu.querySelector<HTMLElement>("a")?.focus();
+      else if (returnFocus) toggle.focus();
+    };
+
+    const isOpen = () => !menu.hidden;
+
+    toggle.addEventListener("click", () => setOpen(!isOpen()));
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && isOpen()) setOpen(false, true);
+    });
+
+    // Tapping outside or tabbing past the last link closes the panel.
+    document.addEventListener("click", (event) => {
+      const target = event.target as Node;
+      if (isOpen() && !menu.contains(target) && !toggle.contains(target)) {
+        setOpen(false);
+      }
+    });
+
+    menu.addEventListener("focusout", (event) => {
+      const next = event.relatedTarget as Node | null;
+      if (next && !menu.contains(next) && !toggle.contains(next)) {
+        setOpen(false);
+      }
+    });
+
+    // Leaving the mobile breakpoint must not strand an open, scroll-locked menu.
+    window.matchMedia("(min-width: 48rem)").addEventListener("change", (event) => {
+      if (event.matches && isOpen()) setOpen(false);
+    });
+  }
+</script>

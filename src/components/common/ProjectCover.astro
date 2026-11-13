@@ -1,0 +1,69 @@
+---
+import { Image } from "astro:assets";
+import BrowserFrame from "@/components/common/BrowserFrame.astro";
+import { projectSlug, type Project } from "@/lib/content";
+
+interface Props {
+  project: Project;
+  /** Passed to the image `sizes` attribute. */
+  sizes?: string;
+  /** Above-the-fold covers should not lazy-load. */
+  eager?: boolean;
+  class?: string;
+}
+
+const {
+  project,
+  sizes = "(min-width: 768px) 520px, 100vw",
+  eager = false,
+  class: className,
+} = Astro.props;
+const { heroImg, live, liveDisable, github, githubDisable, title, tech } =
+  project.data;
+
+const hostOf = (url: string) => {
+  try {
+    const { hostname, pathname } = new URL(url);
+    const host = hostname.replace(/^www\./, "");
+    return host === "github.com"
+      ? `${host}${pathname.replace(/\/$/, "")}`.split("/").slice(0, 3).join("/")
+      : host;
+  } catch {
+    return undefined;
+  }
+};
+
+const label =
+  (!liveDisable && live && hostOf(live)) ||
+  (!githubDisable && github && hostOf(github)) ||
+  projectSlug(project);
+---
+
+<BrowserFrame label={label} class={className}>
+  {
+    heroImg ? (
+      <Image
+        src={heroImg}
+        alt={`Screenshot of ${title}`}
+        width={1040}
+        widths={[480, 720, 1040]}
+        sizes={sizes}
+        loading={eager ? "eager" : "lazy"}
+        class="aspect-[16/10] w-full object-cover object-top"
+      />
+    ) : (
+      <div
+        class="flex aspect-[16/10] flex-col justify-between bg-card p-5"
+        aria-hidden="true"
+      >
+        <span class="text-label font-mono text-muted-foreground">
+          {tech.slice(0, 3).join(" · ")}
+        </span>
+        <span class="font-mono text-2xl font-medium tracking-tight break-words text-foreground-soft sm:text-3xl">
+          {projectSlug(project)}
+          <span class="text-brand">_</span>
+        </span>
+      </div>
+    )
+  }
+</BrowserFrame>

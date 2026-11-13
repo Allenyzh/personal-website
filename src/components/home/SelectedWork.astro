@@ -1,0 +1,41 @@
+---
+import { ArrowRight } from "@lucide/astro";
+import ProjectCard from "@/components/common/ProjectCard.astro";
+import Section from "@/components/common/Section.astro";
+import SectionHead from "@/components/common/SectionHead.astro";
+import { buttonVariants } from "@/components/ui/button";
+import { getCollection } from "astro:content";
+
+const projects = (await getCollection("projects"))
+  .filter((project) => project.data.showOnHomePage)
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<Section id="projects" labelledby="projects-title">
+  <SectionHead
+    index="02"
+    marker="selected-work"
+    title="Recent Projects"
+    id="projects-title"
+  />
+
+  <ul class="grid grid-cols-1 gap-3 md:grid-cols-2">
+    {
+      projects.map((project) => (
+        <li class="flex min-w-0">
+          <ProjectCard project={project} idPrefix="home-project" />
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="mt-8 flex justify-center">
+    <a href="/projects" class:list={[buttonVariants({ variant: "outline" }), "group"]}>
+      View All Projects
+      <ArrowRight
+        class="transition-transform duration-150 group-hover:translate-x-0.5"
+        aria-hidden="true"
+      />
+    </a>
+  </div>
+</Section>

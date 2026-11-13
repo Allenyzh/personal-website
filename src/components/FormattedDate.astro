@@ -1,17 +1,13 @@
 ---
+import { formatDate } from "@/lib/date";
+
 interface Props {
-	date: Date;
+  date: Date;
+  /** "month" drops the day, for entries dated only to the month. */
+  style?: "day" | "month";
 }
 
-const { date } = Astro.props;
+const { date, style = "day" } = Astro.props;
 ---
 
-<time datetime={date.toISOString()}>
-	{
-		date.toLocaleDateString('en-us', {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric',
-		})
-	}
-</time>
+<time datetime={date.toISOString()}>{formatDate(date, style)}</time>

@@ -1,45 +1,61 @@
 ---
 export const prerender = true;
-import { type CollectionEntry, getCollection, render } from "astro:content";
+import { render } from "astro:content";
 import ArticleLayout from "@/layouts/ArticleLayout.astro";
+import JsonLd from "@/components/common/JsonLd.astro";
+import { MY_NAME } from "@/data/consts";
+import {
+  getNeighbours,
+  getSortedPosts,
+  postSlug,
+  type Post,
+} from "@/lib/content";
 import readingTime from "reading-time";
 
 export async function getStaticPaths() {
-  const posts = await getCollection("blog");
+  // Same order as the listing page, so prev/next walks the list the visitor saw.
+  const posts = await getSortedPosts();
   return posts.map((post, index) => {
-    // 计算上一个和下一个博客的索引（循环）
-    const prevIndex = index === 0 ? posts.length - 1 : index - 1;
-    const nextIndex = index === posts.length - 1 ? 0 : index + 1;
-
-    const prevPost = posts[prevIndex];
-    const nextPost = posts[nextIndex];
-
+    const around = getNeighbours(posts, index);
     return {
-      params: { slug: post.data.slug || post.id },
+      params: { slug: postSlug(post) },
       props: {
         post,
-        prevPost: {
-          title: prevPost.data.title,
-          slug: prevPost.data.slug || prevPost.id,
-        },
-        nextPost: {
-          title: nextPost.data.title,
-          slug: nextPost.data.slug || nextPost.id,
+        neighbours: around && {
+          prev: { title: around.prev.data.title, slug: postSlug(around.prev) },
+          next: { title: around.next.data.title, slug: postSlug(around.next) },
         },
       },
     };
   });
 }
 
+type Neighbour = { title: string; slug: string };
 type Props = {
-  post: CollectionEntry<"blog">;
-  prevPost: { title: string; slug: string };
-  nextPost: { title: string; slug: string };
+  post: Post;
+  neighbours?: { prev: Neighbour; next: Neighbour };
 };
 
-const { post, prevPost, nextPost } = Astro.props;
-const { Content } = await render(post);
-const readingTimeResult = readingTime(post.body || "");
+const { post, neighbours } = Astro.props;
+const { Content, headings } = await render(post);
+const site = Astro.site ?? Astro.url;
+const url = new URL(`/blog/${postSlug(post)}/`, site).href;
+
+const article = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.pubDate.toISOString(),
+  ...(post.data.reviseDate && {
+    dateModified: post.data.reviseDate.toISOString(),
+  }),
+  keywords: post.data.tech.join(", "),
+  url,
+  mainEntityOfPage: url,
+  image: new URL("/og.png", site).href,
+  author: { "@type": "Person", name: MY_NAME, url: site.href },
+};
 ---
 
 <ArticleLayout
@@ -47,10 +63,12 @@ const readingTimeResult = readingTime(post.body || "");
   description={post.data.description}
   pubDate={post.data.pubDate}
   author={post.data.author}
-  prevItem={prevPost}
-  nextItem={nextPost}
+  neighbours={neighbours}
   collectionType="blog"
-  readingTime={readingTimeResult.text}
+  readingTime={readingTime(post.body || "").text}
+  headings={headings}
+  markdownHref={`/blog/${postSlug(post)}.md`}
 >
+  <JsonLd slot="head" data={article} />
   <Content />
 </ArticleLayout>

@@ -1,161 +1,101 @@
 ---
 export const prerender = true;
-import { getCollection } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import FormattedDate from "../../components/FormattedDate.astro";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Clock } from "lucide-react";
+import Chip from "@/components/common/Chip.astro";
+import PageHead from "@/components/common/PageHead.astro";
+import Row from "@/components/common/Row.astro";
+import Section from "@/components/common/Section.astro";
+import Stat from "@/components/common/Stat.astro";
+import { getSortedPosts, postSlug, type Post } from "@/lib/content";
+import { formatDate } from "@/lib/date";
 import readingTime from "reading-time";
 
-const posts = (await getCollection("blog"))
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .map((post) => ({
-    ...post,
-    readingTime: readingTime(post.body || "").text,
-  }));
+const description =
+  "Thoughts, tutorials, and insights about web development, technology, and more.";
 
-// Find featured post
-const featuredPost = posts.find((post) => post.data.isFeatured);
+const posts = await getSortedPosts();
+
+// A featured slot only earns its place once there is a list to stand out from.
+const featuredPost =
+  posts.length > 3 ? posts.find((post) => post.data.isFeatured) : undefined;
+// The featured post is not repeated in the list below it.
+const listedPosts = posts.filter((post) => post !== featuredPost);
+
+const rowProps = (post: Post) => ({
+  href: `/blog/${postSlug(post)}/`,
+  title: post.data.title,
+  description: post.data.description,
+});
 ---
 
-<BaseLayout
-  bodyClass="bg-background"
-  title="My Blogs"
-  specialDescription="Thoughts, tutorials, and insights about web development, technology, and more."
->
-  <div class="container mx-auto px-4 py-8 max-w-6xl">
-    <!-- Header Section -->
-    <div class="text-center mb-12">
-      <h1 class="text-4xl font-bold tracking-tight text-foreground mb-4">
-        Blog
-      </h1>
-      <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
-        Thoughts, tutorials, and insights about web development, technology, and
-        more.
-      </p>
-    </div>
-
-    <!-- Featured Post -->
+<BaseLayout title="My Blogs" specialDescription={description}>
+  <PageHead path="~/blog" title="Blog" lead={description}>
     {
-      featuredPost && (
-        <div class="mb-12">
-          <h2 class="text-2xl font-semibold mb-6 text-foreground">
-            Featured Post
-          </h2>
-          <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
-            <a
-              href={`/blog/${featuredPost.data.slug || featuredPost.id}/`}
-              class="block"
-            >
-              <CardHeader className="pb-4">
-                <div class="flex items-center justify-between mb-2">
-                  <Badge variant="secondary">Featured</Badge>
-                  <div class="flex items-center gap-3 text-sm text-muted-foreground">
-                    <span>
-                      <FormattedDate date={featuredPost.data.pubDate} />
-                    </span>
-                    <div class="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      <span class="text-xs">{featuredPost.readingTime}</span>
-                    </div>
-                  </div>
-                </div>
-                <CardTitle className="text-2xl mb-2 hover:text-primary transition-colors">
-                  {featuredPost.data.title}
-                </CardTitle>
-                {featuredPost.data.description && (
-                  <CardDescription className="text-base">
-                    {featuredPost.data.description}
-                  </CardDescription>
-                )}
-              </CardHeader>
-              <CardContent className="pt-0">
-                {featuredPost.data.tech.map((tech) => {
-                  return (
-                    <Badge variant="secondary" className="text-xs mr-1 mb-1">
-                      {tech}
-                    </Badge>
-                  );
-                })}
-              </CardContent>
-            </a>
-          </Card>
-        </div>
+      posts.length > 0 && (
+        <Stat slot="stats" label="posts" value={String(posts.length)} />
+      )
+    }
+  </PageHead>
+
+  {
+    featuredPost && (
+      <Section class="!mt-12" labelledby="featured-title">
+        <h2 id="featured-title" class="text-h2 mb-2">
+          Featured Post
+        </h2>
+        <Row {...rowProps(featuredPost)}>
+          <time slot="meta" datetime={featuredPost.data.pubDate.toISOString()}>
+            {formatDate(featuredPost.data.pubDate)}
+          </time>
+          <span class="mt-1 flex flex-wrap gap-1.5">
+            {featuredPost.data.tech.map((tag) => (
+              <Chip>{tag}</Chip>
+            ))}
+          </span>
+          <Fragment slot="aside">
+            {readingTime(featuredPost.body ?? "").text}
+          </Fragment>
+        </Row>
+      </Section>
+    )
+  }
+
+  <Section class="!mt-12" labelledby="all-title">
+    <h2 id="all-title" class="text-h2 mb-2">All Posts</h2>
+
+    {
+      listedPosts.length > 0 && (
+        <ul>
+          {listedPosts.map((post) => (
+            <li>
+              <Row {...rowProps(post)}>
+                <time slot="meta" datetime={post.data.pubDate.toISOString()}>
+                  {formatDate(post.data.pubDate)}
+                </time>
+                <span class="mt-1 flex flex-wrap gap-1.5">
+                  {post.data.tech.map((tag) => (
+                    <Chip>{tag}</Chip>
+                  ))}
+                </span>
+                <Fragment slot="aside">
+                  {readingTime(post.body ?? "").text}
+                </Fragment>
+              </Row>
+            </li>
+          ))}
+        </ul>
       )
     }
 
-    <!-- All Posts Grid -->
-    <div class="mb-8">
-      <h2 class="text-2xl font-semibold mb-6 text-foreground">All Posts</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {
-          posts.map((post) => (
-            <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
-              <a
-                href={`/blog/${post.data.slug || post.id}/`}
-                class="block h-full"
-              >
-                <CardHeader className="pb-2">
-                  <div class="flex items-center justify-between mb-3">
-                    <Badge variant="outline" className="text-xs">
-                      Article
-                    </Badge>
-                    <div class="flex items-center gap-2 text-xs text-muted-foreground">
-                      <span>
-                        <FormattedDate date={post.data.pubDate} />
-                      </span>
-                      <div class="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        <span>{post.readingTime}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <CardTitle className="text-lg leading-tight mb-2 hover:text-primary transition-colors line-clamp-2">
-                    {post.data.title}
-                  </CardTitle>
-                  {post.data.description && (
-                    <CardDescription className="text-sm line-clamp-3">
-                      {post.data.description}
-                    </CardDescription>
-                  )}
-                </CardHeader>
-                <CardContent className="pt-0">
-                  {post.data.tech.map((tech) => {
-                    return (
-                      <Badge variant="secondary" className="text-xs mr-1 mb-1">
-                        {tech}
-                      </Badge>
-                    );
-                  })}
-                </CardContent>
-              </a>
-            </Card>
-          ))
-        }
-      </div>
-    </div>
-
-    <!-- Empty State -->
     {
       posts.length === 0 && (
-        <div class="text-center py-12">
-          <div class="mx-auto max-w-md">
-            <h3 class="text-lg font-semibold text-foreground mb-2">
-              No posts yet
-            </h3>
-            <p class="text-muted-foreground">
-              Check back later for new blog posts and articles.
-            </p>
-          </div>
+        <div class="py-12 text-center">
+          <h3 class="text-h3 mb-2">No posts yet</h3>
+          <p class="text-muted-foreground">
+            Check back later for new blog posts and articles.
+          </p>
         </div>
       )
     }
-  </div>
+  </Section>
 </BaseLayout>

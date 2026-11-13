@@ -1,68 +1,195 @@
 ---
 export const prerender = true;
-import { getCollection, render } from "astro:content";
+import { ArrowUpRight } from "@lucide/astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import FormattedDate from "@/components/FormattedDate.astro";
-import { Badge } from "@/components/ui/badge";
+import PageHead from "@/components/common/PageHead.astro";
+import { getSortedExperience } from "@/lib/content";
+import { formatPeriod } from "@/lib/date";
 
-const experiences = await getCollection("experience");
-const experience = experiences[0];
-
-const { Content } = experience ? await render(experience) : { Content: null };
-const title = experience?.data.title ?? "Experience";
+const title = "Working Experience";
 const description =
-  experience?.data.description ??
-  "A timeline of my roles, responsibilities, and impact.";
-const updated = experience?.data.updated;
+  "Summary of my professional roles, responsibilities, and impact.";
+
+const entries = await getSortedExperience();
+
+// Percentages are the most scannable facts on this page: set them in mono green.
+// Only text between tags is touched, never attributes or URLs.
+const highlightNumbers = (html: string) =>
+  html.replace(
+    />([^<]+)</g,
+    (_match, text: string) =>
+      `>${text.replace(/\d+(?:\.\d+)?%/g, '<span class="num">$&</span>')}<`,
+  );
+
+const external = { target: "_blank", rel: "noopener noreferrer" };
+const arrow =
+  "size-3.5 flex-none transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5";
 ---
 
 <BaseLayout
-  bodyClass="bg-background"
   title={title}
   specialDescription={description}
+  markdownHref="/experience.md"
 >
-  <div class="container mx-auto px-4 py-8 max-w-6xl">
-    <!-- Header Section -->
-    <div class="text-center mb-12">
-      <h1 class="text-4xl font-bold tracking-tight text-foreground mb-4">
-        {title}
-      </h1>
-      <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
-        {description}
-      </p>
-      {
-        updated && (
-          <div class="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-            <Badge variant="outline" className="text-xs">
-              Updated
-            </Badge>
-            <FormattedDate date={updated} />
-          </div>
-        )
-      }
-    </div>
+  <PageHead path="~/experience" title={title} lead={description} />
 
+  <div class="wrap mt-12">
     {
-      Content ? (
-        <div class="max-w-4xl mx-auto">
-          <div class="overflow-hidden p-0 md:p-8">
-            <div class="prose prose-headings:text-article-primary prose-p:text-base/8 prose-p:tracking-wide prose-figcaption:text-xs prose-img:min-w-2xs prose-img:max-w-[21rem] prose-img:xs:min-w-xs prose-img:xs:max-w-sm prose-img:sm:min-w-sm prose-img:sm:max-w-lg prose-img:md:min-w-lg prose-img:md:max-w-3xl prose-h4:mb-12 max-w-none prose-code:rounded prose-code:text-sm prose-code:font-mono prose-code:text-gray-800 prose-pre:indent-0 prose-code:not-[pre>code]:bg-gray-200 prose-code:not-[pre>code]:px-2 prose-code:not-[pre>code]:py-1 prose-code:not-[pre>code]:mr-1 prose-code:not-[pre>code]:before:content-[''] prose-code:not-[pre>code]:after:content-[''] prose-code:not-[pre>code]:hover:bg-gray-300 prose-code:not-[pre>code]:transition-all prose-code:not-[pre>code]:duration-200 prose-code:not-[pre>code]:hover:cursor-default prose-a:text-[#42b883]">
-              <Content />
-            </div>
-          </div>
-        </div>
+      entries.length > 0 ? (
+        <ol class="max-w-3xl">
+          {entries.map((entry) => {
+            const { data } = entry;
+            const isCurrent = !data.end;
+            const tag = isCurrent ? "Current" : data.type;
+            const body = entry.rendered?.html.trim();
+            return (
+              <li class="timeline-item relative pb-12 pl-8 last:pb-0 md:pl-10">
+                <span
+                  class:list={[
+                    "absolute top-1.5 left-0 size-2.75 rounded-full border-2",
+                    isCurrent
+                      ? "border-brand bg-brand"
+                      : "border-border-strong bg-background",
+                  ]}
+                  aria-hidden="true"
+                />
+
+                <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                  <p class="text-meta font-mono text-muted-foreground tabular-nums">
+                    {formatPeriod(data.start, data.end)}
+                  </p>
+                  {tag && (
+                    <p
+                      class:list={[
+                        "text-label font-mono uppercase",
+                        isCurrent ? "text-brand-ink" : "text-muted-foreground",
+                      ]}
+                    >
+                      {tag}
+                    </p>
+                  )}
+                </div>
+
+                <h2 class="mt-2 text-2xl font-semibold tracking-tight">
+                  {data.role}
+                </h2>
+
+                <p class="mt-1.5 text-foreground-soft">
+                  {data.companyUrl ? (
+                    <a
+                      href={data.companyUrl}
+                      {...external}
+                      class="font-medium text-brand-ink underline underline-offset-4"
+                    >
+                      {data.company}
+                    </a>
+                  ) : (
+                    <span class="font-medium text-foreground">
+                      {data.company}
+                    </span>
+                  )}
+                  {[data.mode, data.location].filter(Boolean).map((part) => (
+                    <>
+                      <span class="mx-2 text-muted-foreground" aria-hidden="true">
+                        ·
+                      </span>
+                      {part}
+                    </>
+                  ))}
+                </p>
+
+                {data.links.length > 0 && (
+                  <ul class="text-meta mt-3 flex flex-wrap gap-x-5 gap-y-2 font-mono">
+                    {data.links.map((link) => (
+                      <li>
+                        <a
+                          href={link.url}
+                          {...external}
+                          class="group inline-flex items-center gap-1 text-brand-ink underline underline-offset-4"
+                        >
+                          {link.label}
+                          <ArrowUpRight class={arrow} aria-hidden="true" />
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {body && (
+                  <div
+                    class="prose prose-site timeline-body mt-5"
+                    set:html={highlightNumbers(body)}
+                  />
+                )}
+              </li>
+            );
+          })}
+        </ol>
       ) : (
-        <div class="text-center py-12">
-          <div class="mx-auto max-w-md">
-            <h3 class="text-lg font-semibold text-foreground mb-2">
-              No experience yet
-            </h3>
-            <p class="text-muted-foreground">
-              Add an entry in src/content/experience to get started.
-            </p>
-          </div>
+        <div class="py-12 text-center">
+          <h2 class="text-h3 mb-2">No experience yet</h2>
+          <p class="text-muted-foreground">
+            Add an entry in src/content/experience to get started.
+          </p>
         </div>
       )
     }
   </div>
 </BaseLayout>
+
+<style>
+  /* The rail runs from each node down to the next one. */
+  .timeline-item::before {
+    content: "";
+    position: absolute;
+    top: 1.25rem;
+    bottom: -0.25rem;
+    left: 5px;
+    width: 1px;
+    background: var(--border);
+  }
+
+  .timeline-item:last-child::before {
+    display: none;
+  }
+
+  /* The entry body is rendered Markdown, so these rules have to be global. */
+  .timeline-body {
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  .timeline-body :global(.num) {
+    color: var(--brand-ink);
+    font-family: var(--font-mono);
+    font-size: 0.9375em;
+    font-weight: 500;
+  }
+
+  /* A client project inside a role: name, then a mono line with dates and a link. */
+  .timeline-body :global(h3) {
+    margin-top: 1.75rem;
+    margin-bottom: 0;
+    font-size: 1.125rem;
+  }
+
+  .timeline-body :global(h3:first-child) {
+    margin-top: 0;
+  }
+
+  .timeline-body :global(h3 + p) {
+    margin-top: 0.375rem;
+    margin-bottom: 0.75rem;
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+  }
+
+  .timeline-body :global(h3 + p em) {
+    font-style: normal;
+  }
+
+  .timeline-body :global(li) {
+    margin-block: 0.375rem;
+  }
+</style>

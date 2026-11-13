@@ -1,0 +1,29 @@
+---
+interface Props {
+  /** Mono breadcrumb, e.g. "~/projects". */
+  path: string;
+  title: string;
+  lead?: string;
+}
+
+const { path, title, lead } = Astro.props;
+---
+
+<header
+  class="wrap mt-12 flex flex-wrap items-end justify-between gap-x-10 gap-y-6 border-b border-border pb-8 md:mt-16"
+>
+  <div class="max-w-2xl">
+    <p class="text-label font-mono text-muted-foreground" aria-hidden="true">
+      {path}
+    </p>
+    <h1 class="text-page-title mt-3 text-balance">{title}</h1>
+    {lead && <p class="text-foreground-soft mt-4 text-lg text-pretty">{lead}</p>}
+  </div>
+  {
+    Astro.slots.has("stats") && (
+      <dl class="text-meta flex gap-8 font-mono">
+        <slot name="stats" />
+      </dl>
+    )
+  }
+</header>

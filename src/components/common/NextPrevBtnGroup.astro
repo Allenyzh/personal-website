@@ -8,44 +8,38 @@ export interface Props {
 }
 
 const { prevItem, nextItem, collectionType } = Astro.props;
+const card =
+  "surface group flex flex-col gap-1.5 p-5 transition-colors duration-150 hover:border-border-strong";
+const label =
+  "text-label inline-flex items-center gap-1.5 font-mono text-muted-foreground";
 ---
 
-<div class="mt-12 py-8">
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <!-- Previous Button -->
-    <a
-      href={`/${collectionType}/${prevItem.slug}`}
-      class="group flex flex-col p-4 rounded-lg border border-gray-200 hover:outline-1 hover:outline-black"
-    >
+<nav
+  aria-label={collectionType === "blog" ? "More posts" : "More projects"}
+  class="mt-16 grid gap-3 md:grid-cols-2"
+>
+  <a href={`/${collectionType}/${prevItem.slug}/`} class={card}>
+    <span class={label}>
       <ArrowLeft
-        class="absolute text-muted-foreground h-5 -translate-y-0.5 group-hover:-translate-x-1.5 transition-all duration-300 opacity-0 group-hover:opacity-100"
+        class="size-3.5 transition-transform duration-150 group-hover:-translate-x-0.5"
+        aria-hidden="true"
       />
-      <span
-        class="text-sm text-muted-foreground mb-1 group-hover:translate-x-5 transition-all duration-300"
-      >
-        PREV
-      </span>
-      <span class="font-medium text-lg transition-colors">
-        {prevItem.title}
-      </span>
-    </a>
+      PREV
+    </span>
+    <span class="text-h3 text-pretty">{prevItem.title}</span>
+  </a>
 
-    <!-- Next Button -->
-    <a
-      href={`/${collectionType}/${nextItem.slug}`}
-      class="group flex flex-col p-4 rounded-lg border border-gray-200 hover:outline-1 hover:outline-black items-end"
-    >
+  <a
+    href={`/${collectionType}/${nextItem.slug}/`}
+    class:list={[card, "md:items-end md:text-right"]}
+  >
+    <span class={label}>
+      NEXT
       <ArrowRight
-        class="absolute text-muted-foreground h-5 -translate-y-0.5 group-hover:translate-x-1.5 transition-all duration-300 opacity-0 group-hover:opacity-100"
+        class="size-3.5 transition-transform duration-150 group-hover:translate-x-0.5"
+        aria-hidden="true"
       />
-      <span
-        class="text-sm text-muted-foreground mb-1 group-hover:-translate-x-5 transition-all duration-300 flex items-center"
-      >
-        NEXT
-      </span>
-      <span class="font-medium text-lg transition-colors">
-        {nextItem.title}
-      </span>
-    </a>
-  </div>
-</div>
+    </span>
+    <span class="text-h3 text-pretty">{nextItem.title}</span>
+  </a>
+</nav>

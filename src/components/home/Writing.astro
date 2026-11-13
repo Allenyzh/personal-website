@@ -1,0 +1,52 @@
+---
+import Chip from "@/components/common/Chip.astro";
+import Row from "@/components/common/Row.astro";
+import Section from "@/components/common/Section.astro";
+import SectionHead from "@/components/common/SectionHead.astro";
+import { getSortedPosts, postSlug } from "@/lib/content";
+import { formatDate } from "@/lib/date";
+import readingTime from "reading-time";
+
+const posts = (await getSortedPosts()).filter(
+  (post) => post.data.showOnHomePage,
+);
+---
+
+{
+  posts.length > 0 && (
+    <Section id="writing" labelledby="writing-title">
+      <SectionHead
+        index="04"
+        marker="writing"
+        title="Writing"
+        id="writing-title"
+        linkHref="/blog"
+        linkText="All posts"
+      />
+
+      <ul class="border-t border-border">
+        {posts.map((post) => (
+          <li>
+            <Row
+              href={`/blog/${postSlug(post)}/`}
+              title={post.data.title}
+              description={post.data.description}
+            >
+              <time slot="meta" datetime={post.data.pubDate.toISOString()}>
+                {formatDate(post.data.pubDate)}
+              </time>
+              <span class="mt-1 flex flex-wrap gap-1.5">
+                {post.data.tech.map((tag) => (
+                  <Chip>{tag}</Chip>
+                ))}
+              </span>
+              <Fragment slot="aside">
+                {readingTime(post.body ?? "").text}
+              </Fragment>
+            </Row>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  )
+}

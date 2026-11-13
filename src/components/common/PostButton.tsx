@@ -13,7 +13,7 @@ interface PostButtonProps {
 export default function PostButton({ items = [] }: PostButtonProps) {
   if (!items.length) return null;
   return (
-    <div className="flex gap-2">
+    <div className="not-prose my-6 flex flex-wrap gap-2">
       {items.map((item) => {
         const Icon = item.type === "demo" ? Globe : Link;
         const label =
@@ -24,17 +24,17 @@ export default function PostButton({ items = [] }: PostButtonProps) {
             key={item.href}
             variant="outline"
             size="lg"
-            className="px-2 py-1 text-sm font-medium"
+            className="px-4 text-sm font-medium"
             asChild
           >
             <a
               href={item.href}
               target="_blank"
               rel="noreferrer noopener"
-              className="flex items-baseline no-underline"
+              className="flex items-center no-underline"
             >
-              <Icon className="mr-2 " />
-              <span className="text-center leading-none ">{label}</span>
+              <Icon aria-hidden="true" />
+              <span>{label}</span>
             </a>
           </Button>
         );

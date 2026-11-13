@@ -1,0 +1,433 @@
+---
+import {
+  Box,
+  Compass,
+  Copy,
+  CornerDownLeft,
+  Download,
+  ExternalLink,
+  FileText,
+  SunMoon,
+} from "@lucide/astro";
+import Kbd from "@/components/common/Kbd.astro";
+import Resume from "@/assets/home/resume-Zhenhao-Yang.pdf";
+import { MY_EMAIL, MY_GITHUB, MY_LINKEDIN } from "@/data/consts";
+import { navItems } from "@/data/navItems";
+import {
+  getSortedPosts,
+  getSortedProjects,
+  postSlug,
+  projectSlug,
+} from "@/lib/content";
+
+type Kind = "link" | "open" | "copy" | "theme";
+
+interface Item {
+  title: string;
+  kind: Kind;
+  value?: string;
+  /** Extra text the search matches against; never rendered. */
+  keywords?: string;
+  hint: string;
+  icon: typeof Box;
+}
+
+const [projects, posts] = await Promise.all([
+  getSortedProjects(),
+  getSortedPosts(),
+]);
+
+const groups: { label: string; items: Item[] }[] = [
+  {
+    label: "Pages",
+    items: [...navItems]
+      .sort((a, b) => a.order - b.order)
+      .map((item) => ({
+        title: item.name,
+        kind: "link" as const,
+        value: item.path,
+        keywords: item.path === "/" ? "home" : "",
+        hint: item.path,
+        icon: Compass,
+      })),
+  },
+  {
+    label: "Projects",
+    items: projects.map((project) => ({
+      title: project.data.title,
+      kind: "link" as const,
+      value: `/projects/${projectSlug(project)}/`,
+      keywords: [...project.data.tech, ...project.data.projectCategories].join(
+        " ",
+      ),
+      hint: "project",
+      icon: Box,
+    })),
+  },
+  {
+    label: "Posts",
+    items: posts.map((post) => ({
+      title: post.data.title,
+      kind: "link" as const,
+      value: `/blog/${postSlug(post)}/`,
+      keywords: post.data.tech.join(" "),
+      hint: "post",
+      icon: FileText,
+    })),
+  },
+  {
+    label: "Actions",
+    items: [
+      {
+        title: "Copy email",
+        kind: "copy",
+        value: MY_EMAIL,
+        keywords: "contact mail address",
+        hint: "action",
+        icon: Copy,
+      },
+      {
+        title: "Download résumé",
+        kind: "open",
+        value: Resume,
+        keywords: "resume cv pdf",
+        hint: "pdf",
+        icon: Download,
+      },
+      {
+        title: "Toggle theme",
+        kind: "theme",
+        keywords: "dark light mode appearance",
+        hint: "action",
+        icon: SunMoon,
+      },
+      {
+        title: "Open GitHub",
+        kind: "open",
+        value: MY_GITHUB,
+        keywords: "code source repositories",
+        hint: "link",
+        icon: ExternalLink,
+      },
+      {
+        title: "Open LinkedIn",
+        kind: "open",
+        value: MY_LINKEDIN,
+        keywords: "profile contact",
+        hint: "link",
+        icon: ExternalLink,
+      },
+    ],
+  },
+].filter((group) => group.items.length > 0);
+
+let optionIndex = 0;
+---
+
+<dialog id="cmdk" class="cmdk" aria-label="Command palette">
+  <div class="flex items-center gap-3 border-b border-border px-4">
+    <span class="font-mono text-brand-ink" aria-hidden="true">›</span>
+    <input
+      id="cmdk-input"
+      type="text"
+      role="combobox"
+      aria-label="Search projects, posts and actions"
+      aria-expanded="true"
+      aria-controls="cmdk-list"
+      aria-autocomplete="list"
+      autocomplete="off"
+      autocapitalize="off"
+      spellcheck="false"
+      enterkeyhint="go"
+      placeholder="Search projects, posts, actions…"
+      class="h-13 min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
+    />
+    <Kbd>esc</Kbd>
+  </div>
+
+  <ul
+    id="cmdk-list"
+    role="listbox"
+    aria-label="Results"
+    class="min-h-0 flex-1 overflow-y-auto overscroll-contain p-2"
+  >
+    {
+      groups.map((group) => (
+        <>
+          <li
+            role="presentation"
+            data-group-label
+            class="text-label px-2 pt-3 pb-1.5 font-mono text-muted-foreground first:pt-1"
+          >
+            {group.label}
+          </li>
+          {group.items.map((item) => (
+            <li
+              id={`cmdk-option-${optionIndex++}`}
+              role="option"
+              aria-selected="false"
+              data-kind={item.kind}
+              data-value={item.value}
+              data-title={item.title}
+              data-keywords={item.keywords}
+              class="cmdk-option flex cursor-pointer items-center gap-3 rounded-md px-2 py-2 text-sm text-foreground-soft"
+            >
+              <item.icon
+                class="size-4 flex-none text-muted-foreground"
+                aria-hidden="true"
+              />
+              <span class="min-w-0 flex-1 truncate">{item.title}</span>
+              <span
+                class="text-label flex-none font-mono text-muted-foreground"
+                aria-hidden="true"
+              >
+                {item.hint}
+              </span>
+            </li>
+          ))}
+        </>
+      ))
+    }
+  </ul>
+
+  <p
+    id="cmdk-empty"
+    hidden
+    class="px-4 py-10 text-center text-sm text-muted-foreground"
+  >
+    Nothing matches that. Asking questions in plain language is coming soon —
+    for now, try a project name or a technology.
+  </p>
+
+  <div
+    class="text-label flex items-center gap-4 border-t border-border px-4 py-2.5 font-mono text-muted-foreground"
+  >
+    <span class="cmdk-keys flex items-center gap-1.5">
+      <Kbd>↑</Kbd><Kbd>↓</Kbd> navigate
+    </span>
+    <span class="cmdk-keys flex items-center gap-1.5">
+      <Kbd><CornerDownLeft class="size-3" aria-hidden="true" /></Kbd> select
+    </span>
+    <span id="cmdk-status" role="status" class="ml-auto"></span>
+  </div>
+</dialog>
+
+<style>
+  .cmdk {
+    width: min(40rem, calc(100vw - 1.5rem));
+    max-width: none;
+    max-height: min(32rem, 72dvh);
+    margin: 12dvh auto auto;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-xl);
+    background: var(--popover);
+    color: var(--foreground);
+  }
+
+  .cmdk[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cmdk::backdrop {
+    background: var(--scrim);
+  }
+
+  .cmdk-option[aria-selected="true"] {
+    background: var(--muted);
+    color: var(--foreground);
+  }
+
+  @media (hover: none) {
+    .cmdk-keys {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .cmdk[open] {
+      animation: cmdk-in 140ms ease-out;
+    }
+
+    @keyframes cmdk-in {
+      from {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+    }
+  }
+</style>
+
+<script>
+  import { toast } from "sonner";
+  import { scoreItem } from "@/lib/fuzzy";
+  import { toggleTheme } from "@/lib/theme";
+
+  const dialog = document.querySelector<HTMLDialogElement>("#cmdk");
+  const input = document.querySelector<HTMLInputElement>("#cmdk-input");
+  const list = document.querySelector<HTMLElement>("#cmdk-list");
+  const empty = document.querySelector<HTMLElement>("#cmdk-empty");
+  const status = document.querySelector<HTMLElement>("#cmdk-status");
+
+  async function copyText(text: string, label: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success(`${label} copied to clipboard`);
+    } catch {
+      // No clipboard access (http, old browser): show the value so it can be copied by hand.
+      toast.error(`Couldn't copy automatically. ${label}: ${text}`);
+    }
+  }
+
+  // Works anywhere on the page, e.g. the "Copy email" chip under the prompt bar.
+  document.addEventListener("click", (event) => {
+    const trigger = (event.target as Element).closest<HTMLElement>(
+      "[data-copy]",
+    );
+    if (trigger?.dataset.copy) {
+      void copyText(trigger.dataset.copy, trigger.dataset.copyLabel ?? "Text");
+    }
+  });
+
+  if (dialog && input && list && empty && status) {
+    const original = Array.from(list.children) as HTMLElement[];
+    const options = original.filter((el) => el.role === "option");
+    let visible = options;
+    let active: HTMLElement | undefined;
+
+    const setActive = (option: HTMLElement | undefined) => {
+      active?.setAttribute("aria-selected", "false");
+      active = option;
+      if (option) {
+        option.setAttribute("aria-selected", "true");
+        input.setAttribute("aria-activedescendant", option.id);
+        option.scrollIntoView({ block: "nearest" });
+      } else {
+        input.removeAttribute("aria-activedescendant");
+      }
+    };
+
+    const render = () => {
+      const query = input.value.trim();
+      if (query) {
+        visible = options
+          .map((option) => ({
+            option,
+            score: scoreItem(
+              query,
+              option.dataset.title ?? "",
+              option.dataset.keywords,
+            ),
+          }))
+          .filter((entry) => entry.score > 0)
+          .sort((a, b) => b.score - a.score)
+          .map((entry) => entry.option);
+        list.replaceChildren(...visible);
+      } else {
+        visible = options;
+        list.replaceChildren(...original);
+      }
+
+      list.hidden = visible.length === 0;
+      empty.hidden = visible.length > 0;
+      status.textContent =
+        visible.length === 1 ? "1 result" : `${visible.length} results`;
+      setActive(visible[0]);
+      list.scrollTop = 0;
+    };
+
+    const open = (query = "") => {
+      if (dialog.open) return;
+      input.value = query;
+      dialog.showModal();
+      render();
+      input.focus();
+    };
+
+    const close = () => dialog.close();
+
+    const run = (option: HTMLElement) => {
+      const { kind, value = "", title = "" } = option.dataset;
+      close();
+      if (kind === "link") window.location.assign(value);
+      else if (kind === "open") window.open(value, "_blank", "noopener");
+      else if (kind === "copy") void copyText(value, title.replace(/^Copy /, ""));
+      else if (kind === "theme") toggleTheme();
+    };
+
+    const move = (step: number) => {
+      if (!visible.length) return;
+      const index = active ? visible.indexOf(active) : -1;
+      setActive(visible[(index + step + visible.length) % visible.length]);
+    };
+
+    input.addEventListener("input", render);
+
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowDown") move(1);
+      else if (event.key === "ArrowUp") move(-1);
+      else if (event.key === "Home") setActive(visible[0]);
+      else if (event.key === "End") setActive(visible[visible.length - 1]);
+      else if (event.key === "Enter" && active) run(active);
+      else return;
+      event.preventDefault();
+    });
+
+    list.addEventListener("click", (event) => {
+      const option = (event.target as Element).closest<HTMLElement>(
+        '[role="option"]',
+      );
+      if (option) run(option);
+    });
+
+    list.addEventListener("pointermove", (event) => {
+      const option = (event.target as Element).closest<HTMLElement>(
+        '[role="option"]',
+      );
+      if (option && option !== active) setActive(option);
+    });
+
+    // A click on the backdrop lands on the dialog element itself.
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) close();
+    });
+
+    document.addEventListener("click", (event) => {
+      const trigger = (event.target as Element).closest<HTMLElement>(
+        "[data-palette-open]",
+      );
+      if (trigger) open(trigger.dataset.paletteOpen);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      const mod = event.metaKey || event.ctrlKey;
+      if (mod && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        if (dialog.open) close();
+        else open();
+        return;
+      }
+
+      // Right after the palette closes, focus can still sit on its (now hidden)
+      // search field for a frame; that must not count as typing.
+      const target = event.target as HTMLElement;
+      const typing =
+        !(dialog.contains(target) && !dialog.open) &&
+        (target.isContentEditable ||
+          ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
+      if (event.key === "/" && !mod && !event.altKey && !typing) {
+        event.preventDefault();
+        open();
+      }
+    });
+
+    // The shortcut hint is rendered for macOS; correct it elsewhere.
+    if (!/Mac|iPhone|iPad/.test(navigator.platform)) {
+      document.querySelectorAll("[data-kbd-mod]").forEach((el) => {
+        el.textContent = "Ctrl K";
+      });
+    }
+  }
+</script>

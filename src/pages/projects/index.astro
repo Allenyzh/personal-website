@@ -1,181 +1,173 @@
 ---
 export const prerender = true;
-import { getCollection } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import FormattedDate from "../../components/FormattedDate.astro";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Clock } from "lucide-react";
-import readingTime from "reading-time";
+import PageHead from "@/components/common/PageHead.astro";
+import ProjectCard from "@/components/common/ProjectCard.astro";
+import Section from "@/components/common/Section.astro";
+import Stat from "@/components/common/Stat.astro";
+import { getSortedProjects, PROJECT_CATEGORIES } from "@/lib/content";
 
-const projects = (await getCollection("projects"))
-  .sort(
-    (a, b) =>
-      b.data.pubDate.valueOf() - a.data.pubDate.valueOf() ||
-      b.data.order - a.data.order
-  )
-  .map((project) => ({
-    ...project,
-    readingTime: readingTime(project.body || "").text,
-  }));
+const description =
+  "A showcase of my work, including web applications, open-source projects, and technical experiments.";
 
-// Find featured project (first project with showOnHomePage)
+const projects = await getSortedProjects();
 const featuredProject = projects.find((project) => project.data.featured);
+
+const years = projects.map((project) => project.data.pubDate.getUTCFullYear());
+const span =
+  years.length === 0
+    ? ""
+    : Math.min(...years) === Math.max(...years)
+      ? String(years[0])
+      : `${Math.min(...years)} — ${Math.max(...years)}`;
+
+// Only offer filters that match at least one project.
+const filters = PROJECT_CATEGORIES.filter(({ value }) =>
+  projects.some((project) => project.data.projectCategories.includes(value)),
+);
+const filterButton =
+  "text-meta inline-flex h-8 items-center rounded-full border border-border px-3.5 font-mono text-muted-foreground transition-colors duration-150 hover:border-border-strong hover:text-foreground aria-pressed:border-transparent aria-pressed:bg-brand-soft aria-pressed:text-brand-ink";
 ---
 
-<BaseLayout
-  bodyClass="bg-background"
-  title="My Projects"
-  specialDescription="A showcase of my work, including web applications, open-source projects, and technical experiments."
->
-  <div class="container mx-auto px-4 py-8 max-w-6xl">
-    <!-- Header Section -->
-    <div class="text-center mb-12">
-      <h1 class="text-4xl font-bold tracking-tight text-foreground mb-4">
-        Projects
-      </h1>
-      <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
-        A showcase of my work, including web applications, open-source projects,
-        and technical experiments.
-      </p>
-    </div>
-
-    <!-- Featured Project -->
+<BaseLayout title="My Projects" specialDescription={description}>
+  <PageHead path="~/projects" title="Projects" lead={description}>
     {
-      featuredProject && (
-        <div class="mb-12">
-          <h2 class="text-2xl font-semibold mb-6 text-foreground">
-            Featured Project
-          </h2>
-          <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
-            <a
-              href={`/projects/${
-                featuredProject.data.slug ||
-                featuredProject.data.title
-                  .toLowerCase()
-                  .replace(/[^a-z0-9]+/g, "-")
-                  .replace(/^-+|-+$/g, "")
-              }/`}
-              class="block"
-            >
-              <CardHeader className="pb-4">
-                <div class="flex items-center justify-between mb-2">
-                  <Badge variant="secondary">Featured</Badge>
-                  <div class="flex items-center gap-3 text-sm text-muted-foreground">
-                    <span>
-                      <FormattedDate date={featuredProject.data.pubDate} />
-                    </span>
-                    <div class="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      <span class="text-xs">{featuredProject.readingTime}</span>
-                    </div>
-                  </div>
-                </div>
-                <CardTitle className="text-2xl mb-2 hover:text-primary transition-colors">
-                  {featuredProject.data.title}
-                </CardTitle>
-                {featuredProject.data.description && (
-                  <CardDescription className="text-base">
-                    {featuredProject.data.description}
-                  </CardDescription>
-                )}
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div class="flex flex-wrap gap-1 mb-4">
-                  {featuredProject.data.tech.map((tech) => {
-                    return (
-                      <Badge variant="secondary" className="text-xs">
-                        {tech}
-                      </Badge>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </a>
-          </Card>
-        </div>
+      projects.length > 0 && (
+        <Fragment slot="stats">
+          <Stat label="projects" value={String(projects.length)} />
+          <Stat label="years" value={span} />
+        </Fragment>
       )
     }
+  </PageHead>
 
-    <!-- All Projects Grid -->
-    <div class="mb-8">
-      <h2 class="text-2xl font-semibold mb-6 text-foreground">All Projects</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {
-          projects.map((project) => (
-            <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
-              <a
-                href={`/projects/${
-                  project.data.slug ||
-                  project.data.title
-                    .toLowerCase()
-                    .replace(/[^a-z0-9]+/g, "-")
-                    .replace(/^-+|-+$/g, "")
-                }/`}
-                class="block h-full"
+  {
+    featuredProject && (
+      <Section class="!mt-12" labelledby="featured-title">
+        <h2 id="featured-title" class="text-h2 mb-6">
+          Featured Project
+        </h2>
+        <ProjectCard
+          project={featuredProject}
+          featured
+          idPrefix="featured"
+        />
+      </Section>
+    )
+  }
+
+  <Section class="!mt-16" labelledby="all-title">
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
+      <h2 id="all-title" class="text-h2">All Projects</h2>
+
+      {
+        filters.length > 1 && (
+          <div
+            role="group"
+            aria-label="Filter projects by category"
+            class="flex flex-wrap gap-2"
+            data-project-filter
+          >
+            <button
+              type="button"
+              data-filter="all"
+              aria-pressed="true"
+              class={filterButton}
+            >
+              All
+            </button>
+            {filters.map((filter) => (
+              <button
+                type="button"
+                data-filter={filter.value}
+                aria-pressed="false"
+                class={filterButton}
               >
-                <CardHeader className="pb-2">
-                  <div class="flex items-center justify-between mb-3">
-                    <Badge variant="outline" className="text-xs">
-                      Project
-                    </Badge>
-                    <div class="flex items-center gap-2 text-xs text-muted-foreground">
-                      <span>
-                        <FormattedDate date={project.data.pubDate} />
-                      </span>
-                      <div class="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        <span>{project.readingTime}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <CardTitle className="text-lg leading-tight mb-2 hover:text-primary transition-colors line-clamp-2">
-                    {project.data.title}
-                  </CardTitle>
-                  {project.data.description && (
-                    <CardDescription className="text-sm line-clamp-3">
-                      {project.data.description}
-                    </CardDescription>
-                  )}
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div class="flex flex-wrap gap-1 mb-3">
-                    {project.data.tech.map((tech) => {
-                      return (
-                        <Badge variant="secondary" className="text-xs">
-                          {tech}
-                        </Badge>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </a>
-            </Card>
-          ))
-        }
-      </div>
+                {filter.label}
+              </button>
+            ))}
+          </div>
+        )
+      }
     </div>
 
-    <!-- Empty State -->
+    <ul class="grid grid-cols-1 gap-3 md:grid-cols-2" data-project-list>
+      {
+        projects.map((project) => (
+          <li
+            class="flex min-w-0"
+            data-categories={project.data.projectCategories.join(" ")}
+          >
+            <ProjectCard project={project} />
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="sr-only" role="status" data-project-count></p>
+
     {
       projects.length === 0 && (
-        <div class="text-center py-12">
-          <div class="mx-auto max-w-md">
-            <h3 class="text-lg font-semibold text-foreground mb-2">
-              No projects yet
-            </h3>
-            <p class="text-muted-foreground">
-              Check back later for new projects and developments.
-            </p>
-          </div>
+        <div class="py-12 text-center">
+          <h3 class="text-h3 mb-2">No projects yet</h3>
+          <p class="text-muted-foreground">
+            Check back later for new projects and developments.
+          </p>
         </div>
       )
     }
-  </div>
+  </Section>
 </BaseLayout>
+
+<script>
+  // Category filter. The chosen category lives in ?category= so it can be linked to.
+  const group = document.querySelector<HTMLElement>("[data-project-filter]");
+  const items = document.querySelectorAll<HTMLElement>(
+    "[data-project-list] > li",
+  );
+  const count = document.querySelector<HTMLElement>("[data-project-count]");
+
+  if (group) {
+    const buttons = Array.from(
+      group.querySelectorAll<HTMLButtonElement>("[data-filter]"),
+    );
+    const known = buttons.map((button) => button.dataset.filter);
+
+    const apply = (value: string, announce: boolean) => {
+      let shown = 0;
+      for (const button of buttons) {
+        button.setAttribute(
+          "aria-pressed",
+          String(button.dataset.filter === value),
+        );
+      }
+      for (const item of items) {
+        const match =
+          value === "all" ||
+          (item.dataset.categories ?? "").split(" ").includes(value);
+        item.hidden = !match;
+        if (match) shown += 1;
+      }
+      if (announce && count) {
+        count.textContent = `Showing ${shown} of ${items.length} projects`;
+      }
+    };
+
+    group.addEventListener("click", (event) => {
+      const button = (event.target as Element).closest<HTMLButtonElement>(
+        "[data-filter]",
+      );
+      const value = button?.dataset.filter;
+      if (!value) return;
+
+      apply(value, true);
+      const url = new URL(window.location.href);
+      if (value === "all") url.searchParams.delete("category");
+      else url.searchParams.set("category", value);
+      history.replaceState(null, "", url);
+    });
+
+    const initial = new URLSearchParams(window.location.search).get("category");
+    if (initial && known.includes(initial)) apply(initial, false);
+  }
+</script>
