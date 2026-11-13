@@ -1,0 +1,40 @@
+---
+import { ArrowUpRight } from "@lucide/astro";
+
+interface Props {
+  href: string;
+  title: string;
+  description?: string;
+}
+
+const { href, title, description } = Astro.props;
+---
+
+<a
+  href={href}
+  class="group -mx-3 grid gap-x-8 gap-y-2 rounded-lg border-b border-border px-3 py-5 transition-colors duration-150 hover:bg-muted/60 md:grid-cols-[7.5rem_minmax(0,1fr)_auto] md:items-baseline"
+>
+  <span class="text-meta font-mono text-muted-foreground tabular-nums">
+    <slot name="meta" />
+  </span>
+  <span class="flex min-w-0 flex-col gap-1.5">
+    <span class="text-h3 flex items-center gap-1.5">
+      <span class="text-pretty">{title}</span>
+      <ArrowUpRight
+        class="size-4 flex-none text-muted-foreground transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-brand-ink"
+        aria-hidden="true"
+      />
+    </span>
+    {
+      description && (
+        <span class="text-sm text-pretty text-muted-foreground">
+          {description}
+        </span>
+      )
+    }
+    <slot />
+  </span>
+  <span class="text-meta font-mono text-muted-foreground md:text-right">
+    <slot name="aside" />
+  </span>
+</a>

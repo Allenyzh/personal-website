@@ -1,47 +1,67 @@
 ---
-import Nav from "@/components/navigation/Nav";
-import Footer from "@/components/Footer";
+import Nav from "@/components/navigation/Nav.astro";
+import Footer from "@/components/Footer.astro";
 import BaseHead from "@/layouts/BaseHead.astro";
+import CommandPalette from "@/components/common/CommandPalette.astro";
 import { SITE_DESCRIPTION, SITE_TITLE } from "@/data/consts";
-import "@/styles/global.css";
 import { GoogleAnalytics } from "@/components/common/GoogleAnalytic";
 import { Toaster } from "@/components/ui/sonner";
 // import ChristmasSnow from "@/components/common/ChristmasSnow";
-import Avatar from "/public/avatar.png";
 
 interface Props {
-  bodyClass?: string;
   title?: string;
   specialDescription?: string;
+  ogType?: "website" | "article";
+  /** Path of this page's Markdown twin, if it has one. */
+  markdownHref?: string;
 }
 
 const GA_ID = "G-P8G1Q6J8D8";
-const { bodyClass, title, specialDescription } = Astro.props;
+const { title, specialDescription, ogType, markdownHref } = Astro.props;
 ---
 
-<html lang="en">
+<!doctype html>
+<html lang="en" class="dark">
   <head>
     <BaseHead
       title={title ? `${title} | ${SITE_TITLE}` : SITE_TITLE}
       description={specialDescription ? specialDescription : SITE_DESCRIPTION}
       keywords="portfolio, zhenhao yang, 杨镇颢, allen yang, web developer, software engineer, full-stack developer, astro, javascript, typescript, react, nodejs, web development, programming, montreal, canada, quebec, personal website, personal portfolio, blog, projects, about me, contact"
-      image={Avatar}
+      ogType={ogType}
+      markdownHref={markdownHref}
     />
 
-    <slot name="customCss" />
+    <!-- Dark is the default. Apply a stored "light" choice before first paint. -->
+    <script is:inline>
+      try {
+        if (localStorage.getItem("theme") === "light") {
+          document.documentElement.classList.remove("dark");
+        }
+      } catch (e) {}
+    </script>
+
+    <slot name="head" />
   </head>
 
-  <body class={`min-h-screen flex flex-col ${bodyClass}`}>
+  <body class="flex min-h-dvh flex-col">
+    <a
+      href="#main"
+      class="sr-only rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50"
+    >
+      Skip to content
+    </a>
+
     <!-- <ChristmasSnow client:load /> -->
     <GoogleAnalytics gtagId={GA_ID} client:only="react" />
-    <Toaster client:load />
+    <Toaster client:idle />
 
-    <Nav currentPath={Astro.url.pathname} client:load />
+    <Nav />
 
-    <main class="flex-1 flex flex-col">
+    <main id="main" class="flex flex-1 flex-col">
       <slot />
     </main>
 
     <Footer />
+    <CommandPalette />
   </body>
 </html>

@@ -1,22 +1,59 @@
 ---
-// import Footer from "../components/Footer.astro";
 export const prerender = true;
-import Hero from "@/components/home/Hero";
-import About from "@/components/home/About";
-import Projects from "@/components/home/ProjectsComponent.astro";
-import Contact from "@/components/home/Contact.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import Skills from "@/components/home/Skills";
-import RecentBlogs from "@/components/home/RecentBlogsComponent.astro";
+import JsonLd from "@/components/common/JsonLd.astro";
+import Hero from "@/components/home/Hero.astro";
+import AtAGlance from "@/components/home/AtAGlance.astro";
+import SelectedWork from "@/components/home/SelectedWork.astro";
+import Stack from "@/components/home/Stack.astro";
+import Writing from "@/components/home/Writing.astro";
+import Contact from "@/components/home/Contact.astro";
+import {
+  MY_EMAIL,
+  MY_GITHUB,
+  MY_LINKEDIN,
+  MY_NAME,
+  SITE_DESCRIPTION,
+} from "@/data/consts";
+import { getCurrentExperience } from "@/lib/content";
+
+const current = await getCurrentExperience();
+const site = Astro.site ?? Astro.url;
+
+// Everything here comes from consts.ts and the experience collection.
+const person = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: MY_NAME,
+  url: site.href,
+  image: new URL("/avatar.png", site).href,
+  description: SITE_DESCRIPTION,
+  email: `mailto:${MY_EMAIL}`,
+  sameAs: [MY_GITHUB, MY_LINKEDIN],
+  ...(current && {
+    jobTitle: current.data.role,
+    worksFor: {
+      "@type": "Organization",
+      name: current.data.company,
+      ...(current.data.companyUrl && { url: current.data.companyUrl }),
+    },
+  }),
+  ...(current?.data.location && {
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: current.data.location,
+    },
+  }),
+};
 ---
 
-<BaseLayout bodyClass="bg-gray-50 flex flex-col">
-  <section class="flex-1 flex flex-col items-center justify-center">
-    <Hero />
-    <About />
-    <Skills />
-    <Projects />
-    <RecentBlogs />
-    <Contact />
-  </section>
+<BaseLayout markdownHref="/llms.txt">
+  <JsonLd slot="head" data={person} />
+
+  <Hero />
+  <AtAGlance />
+  <SelectedWork />
+  <Stack />
+  <Writing />
+  <Contact />
 </BaseLayout>

@@ -68,7 +68,9 @@ test.describe("Footer", () => {
       const footer = page.locator("footer");
 
       // Check footer content
-      await expect(footer.getByText("© 2026")).toBeVisible();
+      await expect(
+        footer.getByText(`© ${new Date().getFullYear()}`)
+      ).toBeVisible();
       await expect(footer.getByText("Zhenhao Yang")).toBeVisible();
     }
   });

@@ -1,0 +1,28 @@
+---
+interface Props {
+  tone?: "neutral" | "brand";
+  href?: string;
+  class?: string;
+}
+
+const { tone = "neutral", href, class: className } = Astro.props;
+const Tag = href ? "a" : "span";
+const external = href?.startsWith("http");
+---
+
+<Tag
+  href={href}
+  target={external ? "_blank" : undefined}
+  rel={external ? "noopener noreferrer" : undefined}
+  class:list={[
+    "text-label inline-flex h-6 items-center rounded-md border px-2 font-mono whitespace-nowrap",
+    tone === "brand"
+      ? "border-transparent bg-brand-soft text-brand-ink"
+      : "border-border bg-muted text-foreground-soft",
+    href &&
+      "transition-colors duration-150 hover:border-border-strong hover:text-foreground",
+    className,
+  ]}
+>
+  <slot />
+</Tag>

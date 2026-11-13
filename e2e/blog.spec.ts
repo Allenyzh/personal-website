@@ -58,8 +58,12 @@ test.describe("Blog Post Detail Page", () => {
     await expect(page).toHaveURL("/blog");
   });
 
-  test("should have prev/next navigation", async ({ page }) => {
-    await expect(page.getByRole("link", { name: /PREV/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: /NEXT/i })).toBeVisible();
+  test("should offer the post as Markdown", async ({ page }) => {
+    await expect(
+      page.getByRole("button", { name: "Copy as Markdown" })
+    ).toBeVisible();
+    await expect(
+      page.locator('link[rel="alternate"][type="text/markdown"]')
+    ).toHaveAttribute("href", /\/blog\/css-tricks-flexbox\.md$/);
   });
 });

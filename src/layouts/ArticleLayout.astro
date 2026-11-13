@@ -1,113 +1,159 @@
 ---
+import type { MarkdownHeading } from "astro";
+import { ArrowLeft } from "@lucide/astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import FormattedDate from "@/components/FormattedDate.astro";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Clock } from "@lucide/astro";
+import Chip from "@/components/common/Chip.astro";
+import CopyButton from "@/components/common/CopyButton";
 import NextPrevBtnGroup from "@/components/common/NextPrevBtnGroup.astro";
+import Prose from "@/components/common/Prose.astro";
+import { buttonVariants } from "@/components/ui/button";
+
+type Neighbour = { title: string; slug: string };
 
 export interface Props {
   title: string;
   description: string;
   pubDate: Date;
+  /** Projects are dated to the month; posts to the day. */
+  dateStyle?: "day" | "month";
   author: string;
   tech?: string[];
-  prevItem: { title: string; slug: string };
-  nextItem: { title: string; slug: string };
+  /** Omit when the collection has nothing else to link to. */
+  neighbours?: { prev: Neighbour; next: Neighbour };
   collectionType: "blog" | "projects";
   readingTime?: string;
+  headings?: MarkdownHeading[];
+  /** Path of the Markdown version of this page. */
+  markdownHref: string;
 }
 
 const {
   title,
   description,
   pubDate,
+  dateStyle = "day",
   author,
-  tech,
-  prevItem,
-  nextItem,
+  tech = [],
+  neighbours,
   collectionType,
   readingTime,
+  headings = [],
+  markdownHref,
 } = Astro.props;
----
 
-<style is:inline>
-  .prose blockquote > * {
-    font-size: 0.85rem; /* text-xs */
-    line-height: normal;
-    color: #a0a0a0; /* text-gray-600 */
-    font-style: italic;
-    font-weight: 600;
-  }
-</style>
+const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+---
 
 <BaseLayout
   title={`${collectionType === "blog" ? "Blog" : "Project"} - ${title}`}
   specialDescription={description}
+  ogType="article"
+  markdownHref={markdownHref}
 >
-  <div class="md:mx-auto max-w-7xl space-y-3 px-5">
-    <a href={`/${collectionType}`}>
-      <Button className="mt-4 group cursor-pointer" variant="outline" size="sm">
+  <slot name="head" slot="head" />
+
+  <article class="wrap mt-8 md:mt-12">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <a
+        href={`/${collectionType}`}
+        class:list={[buttonVariants({ variant: "outline", size: "sm" }), "group"]}
+      >
         <ArrowLeft
-          class="h-4 w-4 group-hover:-translate-x-1 transition-all duration-200"
+          class="transition-transform duration-150 group-hover:-translate-x-0.5"
+          aria-hidden="true"
         />
-        <span class="translate-y-[1.25px]">
-          Back to {collectionType === "blog" ? "blogs" : "projects"}
-        </span>
-      </Button>
-    </a>
+        Back to {collectionType === "blog" ? "blogs" : "projects"}
+      </a>
 
-    <h1 class="text-center text-4xl font-bold mt-6">{title}</h1>
+      <CopyButton
+        client:idle
+        url={markdownHref}
+        type="Markdown"
+        label="Copy as Markdown"
+      />
+    </div>
 
-    <div class="flex justify-center items-center gap-3 flex-wrap">
-      <span class="text-sm text-muted-foreground">
-        <FormattedDate date={pubDate} />
-      </span>
-      <span class="text-sm text-muted-foreground capitalize border-l pl-3">
-        By {author}
-      </span>
+    <header class="mt-8 max-w-[44rem] md:mt-10">
+      <h1 class="text-page-title text-balance">{title}</h1>
+
+      <p
+        class="text-meta mt-5 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-muted-foreground"
+      >
+        <FormattedDate date={pubDate} style={dateStyle} />
+        <span aria-hidden="true">·</span>
+        <span class="capitalize">By {author}</span>
+        {
+          readingTime && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>{readingTime}</span>
+            </>
+          )
+        }
+      </p>
+
+      <p class="mt-5 text-lg text-pretty text-foreground-soft">{description}</p>
+
       {
-        readingTime && (
-          <span class="text-sm text-muted-foreground border-l pl-3 flex items-center gap-1">
-            <Clock class="h-3.5 w-3.5 -translate-y-[1.25px]" />
-            <span>{readingTime}</span>
-          </span>
+        tech.length > 0 && (
+          <ul class="mt-5 flex flex-wrap gap-1.5" aria-label="Tech stack">
+            {tech.map((item) => (
+              <li>
+                <Chip>{item}</Chip>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </header>
+
+    <div
+      class="mt-8 grid grid-cols-1 gap-12 border-t border-border pt-8 lg:grid-cols-[minmax(0,44rem)_minmax(0,1fr)] lg:gap-16"
+    >
+      <Prose>
+        <slot />
+      </Prose>
+
+      {
+        toc.length > 1 && (
+          <aside class="hidden lg:block">
+            <nav aria-labelledby="toc-title" class="sticky top-24">
+              <p
+                id="toc-title"
+                class="text-label font-mono text-muted-foreground"
+              >
+                On this page
+              </p>
+              <ul class="mt-3 border-l border-border text-sm">
+                {toc.map((heading) => (
+                  <li>
+                    <a
+                      href={`#${heading.slug}`}
+                      class:list={[
+                        "-ml-px block border-l border-transparent py-1.5 text-muted-foreground transition-colors duration-150 hover:border-border-strong hover:text-foreground",
+                        heading.depth === 3 ? "pl-7" : "pl-4",
+                      ]}
+                    >
+                      {heading.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </aside>
         )
       }
     </div>
 
-    <p class="text-center text-muted-foreground">
-      {description}
-    </p>
-
-    <!-- Tech Stack (只在 projects 中显示) -->
     {
-      tech && tech.length > 0 && (
-        <div class="flex justify-center">
-          <div class="flex flex-wrap gap-2 justify-center">
-            {tech.map((techItem) => (
-              <Badge variant="secondary" className="text-sm">
-                {techItem}
-              </Badge>
-            ))}
-          </div>
-        </div>
+      neighbours && (
+        <NextPrevBtnGroup
+          prevItem={neighbours.prev}
+          nextItem={neighbours.next}
+          collectionType={collectionType}
+        />
       )
     }
-
-    <div class="flex justify-center gap-4 pb-3 border-b"></div>
-
-    <div
-      class="prose prose-headings:text-article-primary prose-p:text-base/8 prose-p:tracking-wide prose-figcaption:text-xs prose-img:min-w-2xs prose-img:max-w-[21rem] prose-img:xs:min-w-xs prose-img:xs:max-w-sm prose-img:sm:min-w-sm prose-img:sm:max-w-lg prose-img:md:min-w-lg prose-img:md:max-w-3xl prose-h4:mb-12 max-w-none prose-code:rounded prose-code:text-sm prose-code:font-mono prose-code:text-gray-800 prose-pre:indent-0 prose-code:not-[pre>code]:bg-gray-200 prose-code:not-[pre>code]:px-2 prose-code:not-[pre>code]:py-1 prose-code:not-[pre>code]:mr-1 prose-code:not-[pre>code]:before:content-[''] prose-code:not-[pre>code]:after:content-[''] prose-code:not-[pre>code]:hover:bg-gray-300 prose-code:not-[pre>code]:transition-all prose-code:not-[pre>code]:duration-200 prose-code:not-[pre>code]:hover:cursor-default prose-pre:[span#copyablespan>pre]:py-0"
-    >
-      <slot />
-    </div>
-
-    <!-- Navigation Buttons -->
-    <NextPrevBtnGroup
-      prevItem={prevItem}
-      nextItem={nextItem}
-      collectionType={collectionType}
-    />
-  </div>
+  </article>
 </BaseLayout>

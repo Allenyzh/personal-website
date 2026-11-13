@@ -5,12 +5,9 @@ interface Skill {
 
 interface SkillCategory {
   title: string;
-  icon: React.ComponentType<{ className?: string }>;
   skills: Skill[];
-  description?: string;
+  /** Rendered with the brand tone; reserved for the AI row. */
+  highlight?: boolean;
 }
 
-interface SkillsProps {
-  className?: string;
-}
-export type { Skill, SkillCategory, SkillsProps };
+export type { Skill, SkillCategory };

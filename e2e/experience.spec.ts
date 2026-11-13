@@ -27,6 +27,15 @@ test.describe("Experience Page", () => {
     await expect(page.getByText("NeverNull Tech Inc.")).toBeVisible();
   });
 
+  test("should mark only the open-ended role as current", async ({ page }) => {
+    const current = page
+      .locator("main ol > li")
+      .filter({ has: page.getByText("Current", { exact: true }) });
+    await expect(current).toHaveCount(1);
+    await expect(current).toContainText("OODARIS AI");
+    await expect(current).toContainText("Present");
+  });
+
   test("should have external project links", async ({ page }) => {
     const projectLink = page
       .getByRole("link", { name: "Project Link" })

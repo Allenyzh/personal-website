@@ -1,24 +1,27 @@
 ---
 import { Code } from "astro:components";
+import type { ComponentProps } from "astro/types";
 import CopyButton from "@/components/common/CopyButton";
 
 interface Props {
   code: string;
-  lang?: string;
+  lang?: ComponentProps<typeof Code>["lang"];
 }
 
-const { code, lang = "html" } = Astro.props as any;
+const { code, lang = "html" } = Astro.props;
 ---
 
-<div class="relative group">
-  <div class="[&>pre]:!pr-12 [&>pre]:!overflow-x-auto">
-    <Code
-      class="whitespace-pre-wrap break-all min-w-0"
-      code={code}
-      lang={lang as any}
-    />
-  </div>
-  <div class="absolute top-2 right-2">
-    <CopyButton client:load text={code} type="Code" />
-  </div>
-</div>
+<figure class="code-block not-prose">
+  <figcaption
+    class="text-label flex h-9 items-center justify-between border-b border-border pr-1 pl-4 font-mono text-muted-foreground"
+  >
+    <span>{lang}</span>
+    <CopyButton client:visible text={code} type="Code" />
+  </figcaption>
+  <Code
+    code={code}
+    lang={lang}
+    themes={{ light: "github-light", dark: "github-dark" }}
+    defaultColor={false}
+  />
+</figure>
